@@ -62,16 +62,42 @@ namespace PostHubAPI.Controllers
 
         [HttpPost("{parentCommentId}")]
         [Authorize]
-        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId, CommentDTO commentDTO)
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (user == null) return Unauthorized();
 
+            try
+            {
+                IFormCollection formCollection = await Request.ReadFormAsync();
+                int i = 0;
+                IFormFile? file = formCollection.Files.GetFile("image" + i);
+                while (file != null)
+                {
+
+                    Image image = Image.Load(file.OpenReadStream());
+                    Picture picture = new Picture()
+                    {
+                        Id = 0,
+                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                        MimeType = file.ContentType
+                    };
+                    image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+                    i++;
+                    file = formCollection.Files.GetFile("image" + i);
+                }
+
+            }
+            catch (Exception ex) { }
+
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment);
-            if(newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+
+            string texteCommentaire = Request.Form["textComment"]; 
+            Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment);
+            if (newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);

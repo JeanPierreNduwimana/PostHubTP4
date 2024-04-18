@@ -45,6 +45,8 @@ export class FullPostComponent implements OnInit {
     this.isAuthor = localStorage.getItem("username") == this.post?.mainComment?.username;
   }
 
+  @ViewChild("commentWithPicture", {static:false}) pictureInput?: ElementRef;
+
   async toggleSorting(){
     if(this.post == null) return;
     this.post = await this.postService.getPost(this.post.id, this.sorting);
@@ -57,11 +59,23 @@ export class FullPostComponent implements OnInit {
       return;
     }
 
-    let commentDTO = {
-      text : this.newComment
-    }
 
-    this.post?.mainComment?.subComments?.push(await this.postService.postComment(commentDTO, this.post.mainComment.id));
+    //Pour envoyer les photos au serveurs.
+    let formdata = new FormData;
+    let i : number = 0; 
+    formdata.append("textComment", this.newComment)
+    console.log(this.pictureInput?.nativeElement.filesUploadByUser)
+
+    let file = this.pictureInput?.nativeElement.files[0];
+
+    while(file != null){
+      formdata.append("image" + i, file, file.name);
+      console.log("image" + i)
+      i++;
+      file = this.pictureInput?.nativeElement.files[i]
+    }
+    console.log(formdata);
+    this.post?.mainComment?.subComments?.push(await this.postService.postComment(formdata, this.post.mainComment.id));
 
     this.newComment = "";
   }
