@@ -17,6 +17,12 @@ export class EditPostComponent implements OnInit {
   postTitle : string = "";
   postText : string = "";
 
+  @ViewChild("fileUploadViewChild", {static:false}) pictureInput ?: ElementRef;
+
+  formData : FormData = new FormData();
+  NbImage : number = -1;
+  
+
   // Icônes Font Awesome
   faEllipsis = faEllipsis;
   faUpLong = faUpLong;
@@ -31,6 +37,7 @@ export class EditPostComponent implements OnInit {
     if(hubId != null){
       this.hub = await this.hubService.getHub(+hubId);
     }
+
   }
 
   // Créer un nouveau post (et son commentaire principal)
@@ -41,15 +48,31 @@ export class EditPostComponent implements OnInit {
     }
     if(this.hub == null) return;
 
-    let postDTO = {
-      title : this.postTitle,
-      text : this.postText
-    };
-
-    let newPost : Post = await this.postService.postPost(this.hub.id, postDTO);
+    let index : number = 0;
+    while(this.pictureInput?.nativeElement.files[index] != null)
+    {
+        let file = this.pictureInput?.nativeElement.files[index];
+        this.formData.append(index.toString(), file, file.name);
+        index = index + 1;
+    }
+    this.formData.append("title", this.postTitle);
+    this.formData.append("text", this.postText);
+    let newPost : Post = await this.postService.postPost(this.hub.id, this.formData);
 
     // On se déplace vers le nouveau post une fois qu'il est créé
     this.router.navigate(["/post", newPost.id]);
+  }
+
+  ajouterimage(){
+    let file = this.pictureInput?.nativeElement.files[0];
+    if(file == null)
+    {
+      console.log("Input HTML ne contient aucune image.");
+      return;
+    }
+
+    this.NbImage = this.NbImage + 1;
+    this.formData.append(this.NbImage.toString(),file,file.name);
   }
 
 }

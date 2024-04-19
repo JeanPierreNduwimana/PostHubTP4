@@ -21,6 +21,10 @@
     {{post.mainComment!.text}}
     </div>
     <!-- Des images pourraient être affichées ici (pas strictement obligatoire...) -->
+
+    <div *ngFor="let picture of  this.post?.mainComment?.pictures">
+      <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+    </div>
   </div>
 
   <!-- Votes du post. Ils ne peuvent pas être modifiés ici, seulement dans le composant fullPost une fois ce post cliqué -->

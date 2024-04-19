@@ -38,9 +38,25 @@ namespace PostHubAPI.Controllers
             _commentService = commentService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetPicture(int id)
+        {
+            if (_pictureService.IsContextNull())
+            {
+                return NotFound();
+            }
+
+            Picture? picture = await _pictureService.FindPicture(id);
+            if (picture == null || picture.FileName == null || picture.MimeType == null) { return NotFound(new { Message = "Cette image n'existe pas" }); }
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+
+            return File(bytes, picture.MimeType);
+        }
+
         [HttpPost("{hubId}")]
         [Authorize]
-        public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId, PostDTO postDTO)
+        public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (user == null) return Unauthorized();
@@ -48,7 +64,56 @@ namespace PostHubAPI.Controllers
             Hub? hub = await _hubService.GetHub(hubId);
             if (hub == null) return NotFound();
 
-            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null);
+            PostDTO postDTO = new PostDTO();
+
+
+            try
+            {
+                IFormCollection formcollection = await Request.ReadFormAsync();
+
+                string? fileTitle = Request.Form["title"];
+                string? fileText = Request.Form["text"];
+
+                if(fileTitle != null && fileText != null)
+                {
+                    postDTO.Title = fileTitle;
+                    postDTO.Text = fileText;
+                }
+                else
+                {
+                    return BadRequest(new { Message = "Il faut un titre et un text pour le post." });
+                }
+                int index = 0;
+
+                while(formcollection.Files.GetFile(index.ToString()) != null)
+                {
+                    Picture picture = new Picture();
+                    IFormFile? file = formcollection.Files.GetFile(index.ToString());
+
+                    if (file != null)
+                    {
+                        Image image = Image.Load(file.OpenReadStream());
+                        picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        picture.MimeType = file.ContentType;
+
+                        image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+                        await _pictureService.AjoutPhoto(picture);
+                    }
+
+                    index++;
+                }
+                   
+            }catch(Exception)
+            {
+                throw;
+            }
+
+
+
+
+            List<Picture> pictures = await _pictureService.ListPhoto();
+
+            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
             if(mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Post? post = await _postService.CreatePost(postDTO.Title, hub, mainComment);
@@ -70,7 +135,8 @@ namespace PostHubAPI.Controllers
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment);
+            List<Picture> pictures = await _pictureService.ListPhoto();
+            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment, pictures);
             if(newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);
@@ -146,8 +212,8 @@ namespace PostHubAPI.Controllers
 
             IEnumerable<PostDisplayDTO>? posts = hub.Posts?.Select(p => new PostDisplayDTO(p, false, user));
             if (sorting == "popular") posts = posts?.OrderByDescending(p => p.MainComment.Upvotes - p.MainComment.Downvotes);
-            else posts = posts?.OrderByDescending(p => p.MainComment.Date);
-
+            else { posts = posts?.OrderByDescending(p => p.MainComment.Date); }
+            
             return Ok(posts);
         }
 
@@ -164,6 +230,9 @@ namespace PostHubAPI.Controllers
                 postDisplayDTO.MainComment.SubComments = postDisplayDTO.MainComment!.SubComments!.OrderByDescending(c => c.Upvotes - c.Downvotes).ToList();
             else
                 postDisplayDTO.MainComment.SubComments = postDisplayDTO.MainComment!.SubComments!.OrderByDescending(c => c.Date).ToList();
+
+            List<Picture> pictures = await _pictureService.ListPhoto();
+            postDisplayDTO.MainComment.pictures = pictures;
 
             return Ok(postDisplayDTO);
         }

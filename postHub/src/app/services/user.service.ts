@@ -19,7 +19,7 @@ export class UserService {
       passwordConfirm : passwordConfirm
     };
 
-    let x = await lastValueFrom(this.http.post<any>("https://localhost:7007/api/Users/Register", registerDTO));
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/Register", registerDTO));
     console.log(x);
   }
 
@@ -31,7 +31,7 @@ export class UserService {
       password : password
     };
 
-    let x = await lastValueFrom(this.http.post<any>("https://localhost:7007/api/Users/Login", loginDTO));
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/Login", loginDTO));
     console.log(x);
 
     // N'hésitez pas à ajouter d'autres infos dans le stockage local... pourrait vous aider pour la partie admin / modérateur
