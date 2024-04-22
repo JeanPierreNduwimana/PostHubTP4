@@ -75,15 +75,10 @@ namespace PostHubAPI.Controllers
                 IFormFile? file = formCollection.Files.GetFile("image" + i);
                 while (file != null)
                 {
-
                     Image image = Image.Load(file.OpenReadStream());
-                    Picture picture = new Picture()
-                    {
-                        Id = 0,
-                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
-                        MimeType = file.ContentType
-                    };
-                    image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+
+                    await _pictureService.EditPicture(image, file);
+
                     i++;
                     file = formCollection.Files.GetFile("image" + i);
                 }
