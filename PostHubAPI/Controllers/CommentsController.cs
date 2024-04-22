@@ -77,7 +77,15 @@ namespace PostHubAPI.Controllers
                 {
                     Image image = Image.Load(file.OpenReadStream());
 
-                    await _pictureService.EditPicture(image, file);
+                    Picture picture = new Picture()
+                    {
+                        Id = 0,
+                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                        MimeType = file.ContentType
+                    };
+
+                    await _pictureService.EditPicture(picture, file, image);
+                    await _pictureService.AjoutPhoto(picture);
 
                     i++;
                     file = formCollection.Files.GetFile("image" + i);

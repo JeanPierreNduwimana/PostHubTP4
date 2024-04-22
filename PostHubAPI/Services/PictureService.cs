@@ -1,4 +1,5 @@
-﻿using PostHubAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PostHubAPI.Data;
 using PostHubAPI.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -17,16 +18,11 @@ namespace PostHubAPI.Services
 
         private bool IsContextNull() => _context.Pictures == null;
 
-        public async Task<Picture[]> EditPicture(Image image, IFormFile file) {
+        public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
             List<Picture> pictures = new List<Picture>();
-            Picture picture = new Picture()
-            {
-                Id = 0,
-                FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
-                MimeType = file.ContentType
-            };
 
-            image.Save(Directory.GetCurrentDirectory() + "/images/full" + picture.FileName);
+
+            image.Save(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
 
             image.Mutate(i =>
                 i.Resize(new ResizeOptions()
@@ -36,10 +32,42 @@ namespace PostHubAPI.Services
                 })
             );
 
-            image.Save(Directory.GetCurrentDirectory() + "/images/thumbnail" + picture.FileName);
+            image.Save(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
             pictures.Add(picture);
 
             return pictures.ToArray();
+        }
+
+
+        public async Task AjoutPhoto(Picture picture)
+        {
+
+            if (!IsContextNull())
+            {
+                await _context.Pictures.AddAsync(picture);
+                await _context.SaveChangesAsync();
+            }
+
+        }
+
+        public async Task<List<Picture>> ListPhoto()
+        {
+            return await _context.Pictures.ToListAsync();
+        }
+
+        public async Task<Picture?> FindPicture(int id)
+        {
+            Picture? picture = await _context.Pictures.FindAsync(id);
+
+            if (picture == null)
+            {
+                return null;
+            }
+            else
+            {
+                return picture;
+            }
+
         }
     }
 }
