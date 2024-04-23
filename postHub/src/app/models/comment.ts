@@ -1,5 +1,5 @@
 import { Picture } from "./picture";
-
+import { publishFacade } from "@angular/compiler";
 export class Comment{
     constructor(
         public id : number,

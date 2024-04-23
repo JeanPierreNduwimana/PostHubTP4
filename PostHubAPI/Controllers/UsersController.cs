@@ -63,7 +63,7 @@ namespace PostHubAPI.Controllers
                 SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8
                     .GetBytes("LooOOongue Phrase SiNoN Ça ne Marchera PaAaAAAaAas !"));
                 JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: "https://localhost:7007",
+                    issuer: "http://localhost:7007",
                     audience: "http://localhost:4200",
                     claims: authClaims,
                     expires: DateTime.Now.AddMinutes(300),

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using SixLabors.ImageSharp;
@@ -16,16 +17,14 @@ namespace PostHubAPI.Services
             _context = context;
         }
 
-        public bool IsContextNull() => _context.Pictures == null;
-
         public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
 
             List<Picture> pictures = new List<Picture>();
 
             image.Save(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
 
-            image.Mutate(i =>
                 i.Resize(new ResizeOptions()
+            image.Mutate(i =>
                 {
                     Mode = ResizeMode.Min,
                     Size = new Size() { Width = 320}
@@ -38,8 +37,8 @@ namespace PostHubAPI.Services
             return pictures.ToArray();
         }
 
-
         public async Task AjoutPhoto(Picture picture)
+
         {
 
             if (!IsContextNull())
@@ -52,14 +51,14 @@ namespace PostHubAPI.Services
 
         public async Task<List<Picture>> ListPhoto()
         {
-            return await _context.Pictures.ToListAsync();
+           return await _context.Pictures.ToListAsync();
         }
 
         public async Task<Picture?> FindPicture(int id)
         {
             Picture? picture = await _context.Pictures.FindAsync(id);
 
-            if (picture == null)
+            if(picture == null)
             {
                 return null;
             }
@@ -67,7 +66,8 @@ namespace PostHubAPI.Services
             {
                 return picture;
             }
-
+            
         }
+        public bool IsContextNull() => _context.Pictures == null;
     }
 }
