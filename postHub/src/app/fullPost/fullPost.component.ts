@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { faDownLong, faEllipsis, faImage, faMessage, faUpLong, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Post } from '../models/post';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../services/post.service';
 import { Picture } from '../models/picture';
+import Glide from '@glidejs/glide';
 
 @Component({
   selector: 'app-fullPost',
@@ -56,6 +57,28 @@ export class FullPostComponent implements OnInit {
 
   @ViewChild("commentWithPicture", {static:false}) pictureInput?: ElementRef;
 
+  //@ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
+  @ViewChildren('glideitems') glideitems : QueryList<any> = new QueryList();
+  
+  ngAfterViewInit() {
+    this.glideitems.changes.subscribe(e => {
+      this.initGlide();
+    });
+    if (this.glideitems.length > 0) {
+      this.initGlide();
+    }
+  }
+    
+
+  initGlide() {
+    var glide = new Glide('.glide', {
+      type: 'carousel',
+      focusAt: 'center',
+      perView: Math.ceil(window.innerWidth / 400)
+    });
+    glide.mount();
+  }
+  
   async toggleSorting(){
     if(this.post == null) return;
     this.post = await this.postService.getPost(this.post.id, this.sorting);
