@@ -65,6 +65,7 @@ namespace PostHubAPI.Controllers
             if (hub == null) return NotFound();
 
             PostDTO postDTO = new PostDTO();
+            List<Picture> pictures = new List<Picture>();
 
 
             try
@@ -98,6 +99,7 @@ namespace PostHubAPI.Controllers
 
                         image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
                         await _pictureService.AjoutPhoto(picture);
+                        pictures.Add(picture);
                     }
 
                     index++;
@@ -108,10 +110,6 @@ namespace PostHubAPI.Controllers
                 throw;
             }
 
-
-
-
-            List<Picture> pictures = await _pictureService.ListPhoto();
 
             Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
             if(mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
@@ -231,8 +229,7 @@ namespace PostHubAPI.Controllers
             else
                 postDisplayDTO.MainComment.SubComments = postDisplayDTO.MainComment!.SubComments!.OrderByDescending(c => c.Date).ToList();
 
-            List<Picture> pictures = await _pictureService.ListPhoto();
-            postDisplayDTO.MainComment.pictures = pictures;
+            
 
             return Ok(postDisplayDTO);
         }
