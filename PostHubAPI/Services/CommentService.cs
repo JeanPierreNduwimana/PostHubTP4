@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -21,7 +21,7 @@ namespace PostHubAPI.Services
             return await _context.Comments.FindAsync(id);
         }
 
-        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment, List<Picture> pictures)
+        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment, List<Picture>? pictures)
         {
             if (IsContextNull()) return null;
 

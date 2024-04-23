@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
@@ -17,14 +17,36 @@ namespace PostHubAPI.Services
             _context = context;
         }
 
+        public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
+
+            List<Picture> pictures = new List<Picture>();
+
+            image.Save(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
+
+                i.Resize(new ResizeOptions()
+            image.Mutate(i =>
+                {
+                    Mode = ResizeMode.Min,
+                    Size = new Size() { Width = 320}
+                })
+            );
+
+            image.Save(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
+            pictures.Add(picture);
+
+            return pictures.ToArray();
+        }
+
         public async Task AjoutPhoto(Picture picture)
+
         {
-            if(!IsContextNull())
+
+            if (!IsContextNull())
             {
                 await _context.Pictures.AddAsync(picture);
                 await _context.SaveChangesAsync();
             }
-            
+
         }
 
         public async Task<List<Picture>> ListPhoto()
@@ -46,7 +68,6 @@ namespace PostHubAPI.Services
             }
             
         }
-
         public bool IsContextNull() => _context.Pictures == null;
     }
 }

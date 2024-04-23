@@ -3,6 +3,7 @@ import { faDownLong, faEllipsis, faImage, faL, faMessage, faUpLong, faXmark } fr
 import { Comment } from '../models/comment';
 import { PostService } from '../services/post.service';
 import { CommonModule } from '@angular/common';
+import { Picture } from '../models/picture';
 
 @Component({
   selector: 'app-comment',
@@ -32,13 +33,18 @@ export class CommentComponent implements OnInit {
   // Variables associées à des inputs
   newComment : string = "";
   editedText ?: string;
+  listImages : Picture[] = [];
 
   constructor(public postService : PostService) { }
 
   ngOnInit() {
     this.isAuthor = localStorage.getItem("username") == this.comment?.username;
     this.editedText = this.comment?.text;
+
+
   }
+
+  @ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
 
   // Créer un nouveau sous-commentaire au commentaire affiché dans ce composant
   // (Pouvoir les commentaires du post, donc ceux qui sont enfant du commentaire principal du post,
@@ -52,12 +58,21 @@ export class CommentComponent implements OnInit {
     if(this.comment == null) return;
     if(this.comment.subComments == null) this.comment.subComments = [];
 
-    let commentDTO = {
-      text : this.newComment
+    //Pour envoyer les photos au serveurs.
+    let formdata = new FormData;
+    while(this.pictureInput?.nativeElement.filesUploadByUser){
+      console.log("Aille");
+      let i : number = 1; 
+      let file = this.pictureInput?.nativeElement.filesUploadByUser
+      formdata.append("image" + i, file, file.name);
+      i++;
     }
-
-    this.comment.subComments.push(await this.postService.postComment(commentDTO, this.comment.id));
     
+    console.log(formdata);
+    this.comment.subComments.push(await this.postService.postComment(formdata, this.comment.id));
+    
+
+
     this.replyToggle = false;
     this.repliesToggle = true;
     this.newComment = "";

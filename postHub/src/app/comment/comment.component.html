@@ -19,6 +19,9 @@
     </div>
     <div class="commentPictures">
       <!-- Des images pourraient être affichées ici... -->
+      <div *ngFor="let picture of comment.pictures">
+        <img alt="{{picture.fileName}}" [src]="'https://localhost:7007/api/Comments/GetPicture/' + picture.id">
+      </div>
     </div>
   </div>
 
@@ -48,7 +51,7 @@
     </div>
     <div>
       <!-- Il faudra modifier cet input -->
-      <input *ngIf="editToggle" type="file" accept="images/*" name="editedCommentPictures">
+      <input *ngIf="editToggle" multiple type="file" accept="images/*" name="editedCommentPictures" #filesUploadByUser>
     </div>
     <div>
       <button *ngIf="editToggle" (click)="editToggle = false">Annuler</button>

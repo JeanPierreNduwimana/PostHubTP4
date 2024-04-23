@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
 using System.Linq;
@@ -49,11 +49,10 @@ namespace PostHubAPI.Controllers
             Picture? picture = await _pictureService.FindPicture(id);
             if (picture == null || picture.FileName == null || picture.MimeType == null) { return NotFound(new { Message = "Cette image n'existe pas" }); }
 
-            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
 
             return File(bytes, picture.MimeType);
         }
-
         [HttpPost("{hubId}")]
         [Authorize]
         public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId)
@@ -67,13 +66,13 @@ namespace PostHubAPI.Controllers
             PostDTO postDTO = new PostDTO();
             List<Picture> pictures = new List<Picture>();
 
-
             try
+
             {
                 IFormCollection formcollection = await Request.ReadFormAsync();
-
                 string? fileTitle = Request.Form["title"];
                 string? fileText = Request.Form["text"];
+
 
                 if(fileTitle != null && fileText != null)
                 {
@@ -90,9 +89,9 @@ namespace PostHubAPI.Controllers
                 {
                     Picture picture = new Picture();
                     IFormFile? file = formcollection.Files.GetFile(index.ToString());
-
                     if (file != null)
                     {
+
                         Image image = Image.Load(file.OpenReadStream());
                         picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                         picture.MimeType = file.ContentType;
@@ -100,18 +99,18 @@ namespace PostHubAPI.Controllers
                         image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
                         await _pictureService.AjoutPhoto(picture);
                         pictures.Add(picture);
-                    }
 
                     index++;
-                }
+                    }
                    
-            }catch(Exception)
+                }
             {
                 throw;
             }
 
-
             Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
+
+            }catch(Exception)
             if(mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Post? post = await _postService.CreatePost(postDTO.Title, hub, mainComment);
@@ -125,17 +124,58 @@ namespace PostHubAPI.Controllers
 
         [HttpPost("{parentCommentId}")]
         [Authorize]
-        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId, CommentDTO commentDTO)
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (user == null) return Unauthorized();
+            List<Picture> pictures = new List<Picture>();
+
+            try
+            {
+               
+                IFormCollection formCollection = await Request.ReadFormAsync();
+                int i = 0;
+                
+                while (formCollection.Files.GetFile("image" + i) != null)
+                {
+
+                    IFormFile? file = formCollection.Files.GetFile("image" + i);
+
+                    if (file != null)
+                    {
+                        Image image = Image.Load(file.OpenReadStream());
+
+                        Picture picture = new Picture()
+                        {
+                            Id = 0,
+                            FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                            MimeType = file.ContentType
+                        };
+
+                        await _pictureService.EditPicture(picture, file, image);
+                        await _pictureService.AjoutPhoto(picture);
+
+                        pictures.Add(picture);
+                    }
+                    
+
+                    i++;
+                }
+
+            }
+            catch (Exception) { throw; }
 
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
             List<Picture> pictures = await _pictureService.ListPhoto();
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment, pictures);
             if(newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment, pictures);
+
+            string texteCommentaire = Request.Form["textComment"]; 
+            Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment, pictures);
+            if (newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
