@@ -3,6 +3,7 @@ import { faDownLong, faEllipsis, faImage, faMessage, faUpLong, faXmark } from '@
 import { Post } from '../models/post';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../services/post.service';
+import { Picture } from '../models/picture';
 
 @Component({
   selector: 'app-fullPost',
@@ -16,6 +17,7 @@ export class FullPostComponent implements OnInit {
   sorting : string = "popular";
   newComment : string = "";
   newMainCommentText : string = "";
+  listImages : Picture[] = [];
 
   // Booléens sus pour cacher / afficher des boutons
   isAuthor : boolean = false;
@@ -74,6 +76,13 @@ export class FullPostComponent implements OnInit {
       i++;
       file = this.pictureInput?.nativeElement.files[i]
     }
+
+    console.log(this.listImages)
+
+    if(1+1 == 2){
+
+    }
+
     console.log(formdata);
     this.post?.mainComment?.subComments?.push(await this.postService.postComment(formdata, this.post.mainComment.id));
 

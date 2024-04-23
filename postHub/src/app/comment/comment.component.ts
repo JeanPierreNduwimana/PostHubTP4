@@ -3,6 +3,7 @@ import { faDownLong, faEllipsis, faImage, faL, faMessage, faUpLong, faXmark } fr
 import { Comment } from '../models/comment';
 import { PostService } from '../services/post.service';
 import { CommonModule } from '@angular/common';
+import { Picture } from '../models/picture';
 
 @Component({
   selector: 'app-comment',
@@ -32,12 +33,15 @@ export class CommentComponent implements OnInit {
   // Variables associées à des inputs
   newComment : string = "";
   editedText ?: string;
+  listImages : Picture[] = [];
 
   constructor(public postService : PostService) { }
 
   ngOnInit() {
     this.isAuthor = localStorage.getItem("username") == this.comment?.username;
     this.editedText = this.comment?.text;
+
+
   }
 
   @ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
@@ -66,6 +70,8 @@ export class CommentComponent implements OnInit {
     console.log(formdata);
     this.comment.subComments.push(await this.postService.postComment(formdata, this.comment.id));
     
+
+
     this.replyToggle = false;
     this.repliesToggle = true;
     this.newComment = "";

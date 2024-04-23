@@ -19,8 +19,8 @@ namespace PostHubAPI.Services
         private bool IsContextNull() => _context.Pictures == null;
 
         public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
-            List<Picture> pictures = new List<Picture>();
 
+            List<Picture> pictures = new List<Picture>();
 
             image.Save(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
 
