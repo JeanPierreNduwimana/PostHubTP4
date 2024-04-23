@@ -68,7 +68,7 @@
   <input type="text" name="newComment" id="newComment" placeholder="Ajouter un commentaire" [(ngModel)]="newComment">
   <div *ngIf="displayInputFile" class="commentPictureAdd">
     <!-- Il faudra modifier cet input -->
-    <input type="file" accept="images/*" name="commentPictures">
+    <input #filesUploadByUser multiple type="file" accept="images/*" name="commentPictures">
   </div>
   <button (click)="displayInputFile = !displayInputFile"><fa-icon [icon]="faImage"></fa-icon></button>
   <button (click)="createComment()">Ajouter</button>
