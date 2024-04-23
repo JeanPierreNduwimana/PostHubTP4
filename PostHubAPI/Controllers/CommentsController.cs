@@ -38,6 +38,22 @@ namespace PostHubAPI.Controllers
             _commentService = commentService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetPicture(int id)
+        {
+            if (_pictureService.IsContextNull())
+            {
+                return NotFound();
+            }
+
+            Picture? picture = await _pictureService.FindPicture(id);
+            if (picture == null || picture.FileName == null || picture.MimeType == null) { return NotFound(new { Message = "Cette image n'existe pas" }); }
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
+
+            return File(bytes, picture.MimeType);
+        }
+
         [HttpPost("{hubId}")]
         [Authorize]
         public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId, PostDTO postDTO)
@@ -74,28 +90,35 @@ namespace PostHubAPI.Controllers
                
                 IFormCollection formCollection = await Request.ReadFormAsync();
                 int i = 0;
-                IFormFile? file = formCollection.Files.GetFile("image" + i);
-                while (file != null)
+                
+                while (formCollection.Files.GetFile("image" + i) != null)
                 {
-                    Image image = Image.Load(file.OpenReadStream());
 
-                    Picture picture = new Picture()
+                    IFormFile? file = formCollection.Files.GetFile("image" + i);
+
+                    if (file != null)
                     {
-                        Id = 0,
-                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
-                        MimeType = file.ContentType
-                    };
+                        Image image = Image.Load(file.OpenReadStream());
 
-                    await _pictureService.EditPicture(picture, file, image);
-                    await _pictureService.AjoutPhoto(picture);
+                        Picture picture = new Picture()
+                        {
+                            Id = 0,
+                            FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                            MimeType = file.ContentType
+                        };
 
-                    pictures.Add(picture);
+                        await _pictureService.EditPicture(picture, file, image);
+                        await _pictureService.AjoutPhoto(picture);
 
-                    file = formCollection.Files.GetFile("image" + i++);
+                        pictures.Add(picture);
+                    }
+                    
+
+                    i++;
                 }
 
             }
-            catch (Exception) { }
+            catch (Exception) { throw; }
 
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();

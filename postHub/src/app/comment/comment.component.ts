@@ -61,10 +61,11 @@ export class CommentComponent implements OnInit {
     //Pour envoyer les photos au serveurs.
     let formdata = new FormData;
     while(this.pictureInput?.nativeElement.filesUploadByUser){
-    let i : number = 1; 
-    let file = this.pictureInput?.nativeElement.filesUploadByUser
-    formdata.append("image" + i, file, file.name);
-    i++;
+      console.log("Aille");
+      let i : number = 1; 
+      let file = this.pictureInput?.nativeElement.filesUploadByUser
+      formdata.append("image" + i, file, file.name);
+      i++;
     }
     
     console.log(formdata);

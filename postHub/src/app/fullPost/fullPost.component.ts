@@ -70,20 +70,12 @@ export class FullPostComponent implements OnInit {
 
     let file = this.pictureInput?.nativeElement.files[0];
 
-    while(file != null){
+    while(file != null && file != undefined){
       formdata.append("image" + i, file, file.name);
-      console.log("image" + i)
       i++;
-      file = this.pictureInput?.nativeElement.files[i]
+      file = this.pictureInput?.nativeElement.files[i];
+      
     }
-
-    console.log(this.listImages)
-
-    if(1+1 == 2){
-
-    }
-
-    console.log(formdata);
     this.post?.mainComment?.subComments?.push(await this.postService.postComment(formdata, this.post.mainComment.id));
 
     this.newComment = "";

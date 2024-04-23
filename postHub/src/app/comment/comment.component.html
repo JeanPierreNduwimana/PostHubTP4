@@ -19,8 +19,8 @@
     </div>
     <div class="commentPictures">
       <!-- Des images pourraient être affichées ici... -->
-      <div *ngFor="let picture of listImages">
-        <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+      <div *ngFor="let picture of comment.pictures">
+        <img alt="{{picture.fileName}}" [src]="'https://localhost:7007/api/Comments/GetPicture/' + picture.id">
       </div>
     </div>
   </div>
