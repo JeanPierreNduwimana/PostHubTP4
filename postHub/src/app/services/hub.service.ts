@@ -15,7 +15,7 @@ export class HubService {
 
     let newHub = new Hub(0, hubName, false);
 
-    let x = await lastValueFrom(this.http.post<Hub>("https://localhost:7007/api/Hubs/PostHub", newHub));
+    let x = await lastValueFrom(this.http.post<Hub>("http://localhost:7007/api/Hubs/PostHub", newHub));
     console.log(x);
     return x;
 
@@ -24,7 +24,7 @@ export class HubService {
   // Obtenir un hub précis quand on affiche ses posts
   async getHub(id : number) : Promise<Hub>{
     console.log(id);
-    let x = await lastValueFrom(this.http.get<Hub>("https://localhost:7007/api/Hubs/GetHub/" + id));
+    let x = await lastValueFrom(this.http.get<Hub>("http://localhost:7007/api/Hubs/GetHub/" + id));
     console.log(x);
     return x;
   }
@@ -32,7 +32,7 @@ export class HubService {
   // Obtenir la liste de hubs de l'utilisateur
   async getUserHubs() : Promise<Hub[]>{
 
-    let x = await lastValueFrom(this.http.get<Hub[]>("https://localhost:7007/api/Hubs/GetUserHubs"));
+    let x = await lastValueFrom(this.http.get<Hub[]>("http://localhost:7007/api/Hubs/GetUserHubs"));
     console.log(x);
     return x;
 
@@ -40,7 +40,7 @@ export class HubService {
 
   // Rejoindre / quitter un hub
   async toggleHubJoin(id : number) : Promise<void>{
-    let x = await lastValueFrom(this.http.put<any>("https://localhost:7007/api/Hubs/ToggleJoinHub/" + id, null));
+    let x = await lastValueFrom(this.http.put<any>("http://localhost:7007/api/Hubs/ToggleJoinHub/" + id, null));
     console.log(x);
   }
 
