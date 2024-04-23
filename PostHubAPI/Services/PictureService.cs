@@ -23,9 +23,9 @@ namespace PostHubAPI.Services
 
             image.Save(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
 
-                i.Resize(new ResizeOptions()
-            image.Mutate(i =>
-                {
+                
+            image.Mutate(i => i.Resize(new ResizeOptions()
+            {
                     Mode = ResizeMode.Min,
                     Size = new Size() { Width = 320}
                 })
