@@ -12,8 +12,8 @@ using PostHubAPI.Data;
 namespace PostHubAPI.Migrations
 {
     [DbContext(typeof(PostHubAPIContext))]
-    [Migration("20240423153604_ChangementAuModel")]
-    partial class ChangementAuModel
+    [Migration("20240423181430_DepartV3")]
+    partial class DepartV3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

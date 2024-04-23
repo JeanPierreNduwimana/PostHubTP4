@@ -74,7 +74,7 @@ namespace PostHubAPI.Controllers
                 string? fileText = Request.Form["text"];
 
 
-                if(fileTitle != null && fileText != null)
+                if (fileTitle != null && fileText != null)
                 {
                     postDTO.Title = fileTitle;
                     postDTO.Text = fileText;
@@ -85,7 +85,7 @@ namespace PostHubAPI.Controllers
                 }
                 int index = 0;
 
-                while(formcollection.Files.GetFile(index.ToString()) != null)
+                while (formcollection.Files.GetFile(index.ToString()) != null)
                 {
                     Picture picture = new Picture();
                     IFormFile? file = formcollection.Files.GetFile(index.ToString());
@@ -96,21 +96,23 @@ namespace PostHubAPI.Controllers
                         picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                         picture.MimeType = file.ContentType;
 
-                        image.Save(Directory.GetCurrentDirectory() + "/images/" + picture.FileName);
+                        await _pictureService.EditPicture(picture, file, image);
                         await _pictureService.AjoutPhoto(picture);
                         pictures.Add(picture);
 
-                    index++;
+                        index++;
                     }
-                   
+
                 }
+            }
+            catch (Exception)
             {
                 throw;
             }
 
-            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
+                Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
 
-            }catch(Exception)
+            
             if(mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Post? post = await _postService.CreatePost(postDTO.Title, hub, mainComment);
@@ -133,10 +135,10 @@ namespace PostHubAPI.Controllers
 
             try
             {
-               
+
                 IFormCollection formCollection = await Request.ReadFormAsync();
                 int i = 0;
-                
+
                 while (formCollection.Files.GetFile("image" + i) != null)
                 {
 
@@ -158,7 +160,7 @@ namespace PostHubAPI.Controllers
 
                         pictures.Add(picture);
                     }
-                    
+
 
                     i++;
                 }
@@ -166,12 +168,10 @@ namespace PostHubAPI.Controllers
             }
             catch (Exception) { throw; }
 
+
+
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
-
-            List<Picture> pictures = await _pictureService.ListPhoto();
-            if(newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment, pictures);
 
             string texteCommentaire = Request.Form["textComment"]; 
             Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment, pictures);
