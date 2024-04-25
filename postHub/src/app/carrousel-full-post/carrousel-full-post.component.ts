@@ -32,7 +32,7 @@ export class CarrouselFullPostComponent {
     var glide = new Glide('.glide', {
       type: 'carousel',
       focusAt: 'center',
-      perView: Math.ceil(window.innerWidth / 300)
+      perView: Math.ceil(window.innerWidth / 400)
     });
     glide.mount();
   }
