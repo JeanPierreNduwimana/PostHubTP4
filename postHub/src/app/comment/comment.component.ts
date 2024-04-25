@@ -59,7 +59,7 @@ export class CommentComponent implements OnInit {
     var glide = new Glide('.glide', {
       type: 'carousel',
       focusAt: 'center',
-      perView: Math.ceil(window.innerWidth / 800)
+      perView: Math.ceil(window.innerWidth / 400)
     });
     glide.mount();
   }

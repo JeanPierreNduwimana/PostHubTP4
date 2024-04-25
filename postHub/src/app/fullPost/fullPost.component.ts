@@ -50,20 +50,17 @@ export class FullPostComponent implements OnInit {
       }
       
     }
-
-    
     this.isAuthor = localStorage.getItem("username") == this.post?.mainComment?.username;
   }
 
   @ViewChild("commentWithPicture", {static:false}) pictureInput?: ElementRef;
-
-  //@ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
   @ViewChildren('glideitems') glideitems : QueryList<any> = new QueryList();
   
   ngAfterViewInit() {
     this.glideitems.changes.subscribe(e => {
       this.initGlide();
     });
+
     if (this.glideitems.length > 0) {
       this.initGlide();
     }
@@ -74,7 +71,7 @@ export class FullPostComponent implements OnInit {
     var glide = new Glide('.glide', {
       type: 'carousel',
       focusAt: 'center',
-      perView: Math.ceil(window.innerWidth / 400)
+      perView: Math.ceil(window.innerWidth / 200)
     });
     glide.mount();
   }
