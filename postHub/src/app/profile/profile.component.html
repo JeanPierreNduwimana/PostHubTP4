@@ -9,7 +9,7 @@
     <input #fileUploadViewChild type="file" name="monImage" accept="images/*">
   </div>
   <div class="bouttonAvatar">
-    <button (click)="ChangeAvatar()">Modifier</button>
+    <button [routerLink]="['/postList', 'index']" (click)="ChangeAvatar()">Modifier</button>
   </div>
   <!-- Le formulaire pour changer le mot de passe vous est déjà fourni -->
   <div class="profile">

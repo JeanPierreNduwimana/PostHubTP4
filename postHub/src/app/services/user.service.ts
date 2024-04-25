@@ -41,7 +41,7 @@ export class UserService {
 
   //Changer son avatar
   async changeAvatar(username : string, formdata : any){
-    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangeAvatar/", username, formdata))
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangeAvatar/" + username, formdata))
     console.log(x);
   }
 

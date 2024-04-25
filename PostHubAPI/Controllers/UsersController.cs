@@ -86,12 +86,13 @@ namespace PostHubAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("{username}")]
         public async Task<IActionResult> ChangeAvatar(String username)
         {
             User user = await _userManager.FindByNameAsync(username);
 
-            if (user == null) {
+            if (user == null)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                 new { Message = "L'utilisateur n'à pas pue être trouver!" });
             }
@@ -100,9 +101,10 @@ namespace PostHubAPI.Controllers
             IFormFile? file = formcollection.Files.GetFile("UserNewAvatar");
             Picture picture = new Picture();
 
-            try{
+            try
+            {
                 Image image = Image.Load(file.OpenReadStream());
-                if (file != null) 
+                if (file != null)
                 {
                     picture.Id = 0;
                     picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -126,28 +128,34 @@ namespace PostHubAPI.Controllers
         [HttpGet("{username}")]
         public async Task<IActionResult> GetAvatar(String username)
         {
-
-
             User user = await _userManager.FindByNameAsync(username);
 
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                   new { Message = "L'utilisateur n'à pas pue être trouver!" });
+                                   new { Message = "L'utilisateur n'a pas pu être trouvé !" });
             }
 
-            Picture picture = new Picture();
             if (user.FileName != null && user.MimeType != null)
             {
+                Picture picture = new Picture();
                 picture.FileName = user.FileName;
                 picture.MimeType = user.MimeType;
                 byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/" + picture.FileName);
                 return File(bytes, picture.MimeType);
             }
-            else {
-                byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/default.png");
-                return File(bytes, picture.FileName);
+            else
+            {
+                if (user.FileName == null && user.MimeType == null)
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/default.png");
+                    return File(bytes, "image/png");
+                }else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound,
+                                       new { Message = "Custom picture not found. Please upload a profile picture." });
+                }
             }
-        }   
+        }
     }
 }
