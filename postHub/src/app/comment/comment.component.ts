@@ -77,14 +77,19 @@ export class CommentComponent implements OnInit {
     if(this.comment == null) return;
     if(this.comment.subComments == null) this.comment.subComments = [];
 
-    //Pour envoyer les photos au serveurs.
+    //Pour envoyer les photos au serveurs.   
     let formdata = new FormData;
-    while(this.pictureInput?.nativeElement.filesUploadByUser){
-      console.log("Aille");
-      let i : number = 1; 
-      let file = this.pictureInput?.nativeElement.filesUploadByUser
+    let i : number = 0; 
+    formdata.append("textComment", this.newComment)
+    console.log(this.pictureInput?.nativeElement.filesUploadByUser)
+
+    let file = this.pictureInput?.nativeElement.files[0];
+
+    while(file != null && file != undefined){
       formdata.append("image" + i, file, file.name);
       i++;
+      file = this.pictureInput?.nativeElement.files[i];
+      
     }
     
     console.log(formdata);
