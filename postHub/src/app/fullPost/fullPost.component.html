@@ -33,18 +33,20 @@
 
       <div class="commentPictures" *ngIf="listImages.length > 4">
         <!-- Des images pourraient être affichées ici... -->
-
-        <app-carrousel-full-post [listimages]="listImages"> </app-carrousel-full-post>
-        
+        <app-carrousel-full-post [listimages]="listImages" [toggleEdit]="toggleMainCommentEdit"> </app-carrousel-full-post>
       </div>
 
       <div class="commentPictures" *ngIf="listImages.length <= 4">
         <!-- Des images pourraient être affichées ici... -->
-
-        <ul>
-          <li *ngFor="let picture of listImages">
+        <ul style="display: flex; gap: 20px;">
+          <li style="list-style: none;" *ngFor="let picture of listImages">
+            <div style="position:relative;">
+              <button (click)="removepicture(picture.id)" *ngIf="toggleMainCommentEdit" type="submit" style="right:0px; position: absolute;">
+                 <span>&times;</span>
+              </button>
             <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
               [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+            </div>
           </li>
         </ul>
       </div>
@@ -62,10 +64,10 @@
         <button><fa-icon [icon]="faMessage"></fa-icon> {{post.mainComment!.subCommentTotal}}</button>
       </div>
       <div>
-        <input *ngIf="toggleMainCommentEdit" type="file" accept="images/*" name="mainCommentPictures">
+        <input *ngIf="toggleMainCommentEdit" multiple type="file" accept="images/*" name="mainCommentPictures" #commentWithPicture>
       </div>
       <div>
-        <button *ngIf="toggleMainCommentEdit" (click)="toggleMainCommentEdit = false">Annuler</button>
+        <button *ngIf="toggleMainCommentEdit" (click)="annulerModification()">Annuler</button>
       </div>
       <div>
         <button *ngIf="toggleMainCommentEdit" (click)="editMainComment()">Modifier</button>
@@ -85,7 +87,7 @@
       <input type="text" name="newComment" id="newComment" placeholder="Ajouter un commentaire"
         [(ngModel)]="newComment">
       <div *ngIf="displayInputFile" class="commentPictureAdd">
-        <input type="file" multiple accept="images/*" name="commentPictures" #commentWithPicture>
+        <input type="file" multiple accept="images/*" name="commentPictures">
       </div>
       <button (click)="displayInputFile = !displayInputFile"><fa-icon [icon]="faImage"></fa-icon></button>
       <button (click)="createComment()">Ajouter</button>

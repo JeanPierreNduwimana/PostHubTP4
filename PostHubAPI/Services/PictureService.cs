@@ -17,6 +17,24 @@ namespace PostHubAPI.Services
             _context = context;
         }
 
+        public async Task DeletePictures(List<Picture>  pictures)
+        {
+            if (pictures == null)
+            {
+                return;
+            }
+
+            foreach (Picture picture in pictures)
+            {
+                _context.Pictures.Remove(picture);
+                System.IO.File.Delete(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
+                await _context.SaveChangesAsync();
+            }
+
+            
+        }
+
+
         public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
 
             List<Picture> pictures = new List<Picture>();
