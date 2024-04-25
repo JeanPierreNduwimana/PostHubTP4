@@ -1,4 +1,3 @@
-
 <!-- Affichage du commentaire (oui c'est gros et laid) -->
 <div class="post" *ngIf="comment != null">
 
@@ -17,11 +16,13 @@
       <textarea *ngIf="editToggle" id="commentTextEdit" name="commentTextEdit" rows="3"
         [(ngModel)]="editedText">{{comment.text}}</textarea>
     </div>
-    <div class="commentPictures">
+    <div class="commentPictures" *ngIf="comment.pictures.length > 0">
       <!-- Des images pourraient être affichées ici... -->
-      <div *ngFor="let picture of comment.pictures">
-        <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
-      </div>
+      <ul class="glide__slides">
+        <li class="glide__slide" style="height: 100px;" #glideitems *ngFor="let picture of comment.pictures">
+          <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+        </li>
+      </ul>
     </div>
   </div>
 

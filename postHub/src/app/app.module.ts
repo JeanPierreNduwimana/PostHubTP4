@@ -20,6 +20,7 @@ import { NewHubComponent } from './newHub/newHub.component';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { CommentListComponent } from './commentList/commentList.component';
+import { CarrouselFullPostComponent } from './carrousel-full-post/carrousel-full-post.component';
 registerLocaleData(localeFr, "fr");
 
 // Si vous cherchez les règles de routage elles sont dans app-routing.module.ts !
@@ -37,7 +38,8 @@ registerLocaleData(localeFr, "fr");
       CommentComponent,
       EditPostComponent,
       NewHubComponent,
-      CommentListComponent
+      CommentListComponent,
+      CarrouselFullPostComponent
    ],
   imports: [
     BrowserModule,

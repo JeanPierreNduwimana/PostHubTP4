@@ -1,8 +1,8 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { faDownLong, faEllipsis, faImage, faL, faMessage, faUpLong, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../models/comment';
 import { PostService } from '../services/post.service';
-import { CommonModule } from '@angular/common';
+import Glide from '@glidejs/glide';
 import { Picture } from '../models/picture';
 
 @Component({
@@ -40,11 +40,30 @@ export class CommentComponent implements OnInit {
   ngOnInit() {
     this.isAuthor = localStorage.getItem("username") == this.comment?.username;
     this.editedText = this.comment?.text;
-
-
   }
 
   @ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
+  @ViewChildren('glideitems') glideitems : QueryList<any> = new QueryList();
+
+  ngAfterViewInit() {
+    this.glideitems.changes.subscribe(e => {
+      this.initGlide();
+    });
+    if (this.glideitems.length > 0) {
+      this.initGlide();
+    }
+  }
+    
+
+  initGlide() {
+    var glide = new Glide('.glide', {
+      type: 'carousel',
+      focusAt: 'center',
+      perView: Math.ceil(window.innerWidth / 400)
+    });
+    glide.mount();
+  }
+ 
 
   // Créer un nouveau sous-commentaire au commentaire affiché dans ce composant
   // (Pouvoir les commentaires du post, donc ceux qui sont enfant du commentaire principal du post,
