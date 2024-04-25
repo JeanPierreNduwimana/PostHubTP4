@@ -55,3 +55,24 @@
     border:white solid 3px;
     border-radius:2px;
 }
+
+.ChangeAvatar {
+    display:block;
+    width:50%;
+    background-color:#4a4a5d;
+    color:#d2d8e5;
+    border:none;
+    padding:10px;
+    border-radius:15px;
+}
+
+.bouttonAvatar button{
+    background-color:#25dc53;
+    font-weight:bold;
+    border:none;
+    border-radius:15px;
+    padding:5px 15px;
+    color:white;
+    margin-top: 5px;
+    margin-left: 5px;
+}
