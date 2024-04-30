@@ -28,7 +28,8 @@ namespace PostHubAPI.Services
             {
                 _context.Pictures.Remove(picture);
                 System.IO.File.Delete(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
-               
+                System.IO.File.Delete(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
+
             }
             await _context.SaveChangesAsync();
 
