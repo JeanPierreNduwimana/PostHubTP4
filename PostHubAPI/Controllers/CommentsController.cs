@@ -82,6 +82,24 @@ namespace PostHubAPI.Controllers
 
             return File(bytes, picture.MimeType);
         }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetPictureBig(int id)
+        {
+            if (_pictureService.IsContextNull())
+            {
+                return NotFound();
+            }
+
+            Picture? picture = await _pictureService.FindPicture(id);
+            if (picture == null || picture.FileName == null || picture.MimeType == null) { return NotFound(new { Message = "Cette image n'existe pas" }); }
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/full/" + picture.FileName);
+
+            return File(bytes, picture.MimeType);
+        }
+
         [HttpPost]
         public async Task<ActionResult> DeletePicture(List<Picture> pictures)
         {

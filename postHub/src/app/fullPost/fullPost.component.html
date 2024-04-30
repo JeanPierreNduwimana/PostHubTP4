@@ -44,8 +44,10 @@
               <button (click)="removepicture(picture.id)" *ngIf="toggleMainCommentEdit" type="submit" style="right:0px; position: absolute;">
                  <span>&times;</span>
               </button>
-            <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
-              [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+              <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
+                <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
+                [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+              </a>
             </div>
           </li>
         </ul>

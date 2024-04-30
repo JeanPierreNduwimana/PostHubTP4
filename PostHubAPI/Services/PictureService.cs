@@ -59,6 +59,12 @@ namespace PostHubAPI.Services
 
         public async Task<Picture> EditAvatar(Picture picture, Image image)
         {
+            image.Mutate(i => i.Resize(new ResizeOptions()
+            {
+                Mode = ResizeMode.Min,
+                Size = new Size() { Width = 320 }
+            })
+            );
             image.Save(Directory.GetCurrentDirectory() + "/images/avatar/" + picture.FileName);
             return picture;
         }
