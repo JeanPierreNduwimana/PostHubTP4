@@ -4,7 +4,13 @@
 
 <div *ngIf="userIsConnected">
   <div id="profileTitle">Votre profil</div>
-
+  <div class="ChangeAvatar">
+    <!-- Ajouter un input de type file ici ne serait pas bête du tout -->
+    <input #fileUploadViewChild type="file" name="monImage" accept="images/*">
+  </div>
+  <div class="bouttonAvatar">
+    <button [routerLink]="['/postList', 'index']" (click)="ChangeAvatar()">Modifier</button>
+  </div>
   <!-- Le formulaire pour changer le mot de passe vous est déjà fourni -->
   <div class="profile">
     <div>Modifier le mot de passe</div>
