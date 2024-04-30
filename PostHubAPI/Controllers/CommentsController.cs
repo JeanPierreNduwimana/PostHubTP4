@@ -38,6 +38,35 @@ namespace PostHubAPI.Controllers
             _commentService = commentService;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<List<Picture>>> AddPictures()
+        {
+            IFormCollection formcollection = await Request.ReadFormAsync();
+            List<Picture> pictures = new List<Picture>();
+            int index = 0;
+            while (formcollection.Files.GetFile(index.ToString()) != null)
+            {
+                Picture picture = new Picture();
+                IFormFile? file = formcollection.Files.GetFile(index.ToString());
+                if (file != null)
+                {
+
+                    Image image = Image.Load(file.OpenReadStream());
+                    picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    picture.MimeType = file.ContentType;
+
+                    await _pictureService.EditPicture(picture, file, image);
+                    await _pictureService.AjoutPhoto(picture);
+                    pictures.Add(picture);
+
+                    index++;
+                }
+
+            }
+
+            return pictures;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> GetPicture(int id)
         {
@@ -52,6 +81,12 @@ namespace PostHubAPI.Controllers
             byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/thumbnail/" + picture.FileName);
 
             return File(bytes, picture.MimeType);
+        }
+        [HttpPost]
+        public async Task<ActionResult> DeletePicture(List<Picture> pictures)
+        {
+            await _pictureService.DeletePictures(pictures);
+            return NoContent();
         }
         [HttpPost("{hubId}")]
         [Authorize]
@@ -285,7 +320,7 @@ namespace PostHubAPI.Controllers
 
             if (user == null || comment.User != user) return Unauthorized();
 
-            Comment? editedComment = await _commentService.EditComment(comment, commentDTO.Text);
+            Comment? editedComment = await _commentService.EditComment(comment, commentDTO.Text, commentDTO.pictures);
             if(editedComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             return Ok(new CommentDisplayDTO(editedComment, true, user));

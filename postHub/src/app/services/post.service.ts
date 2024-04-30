@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Post } from '../models/post';
 import { Comment } from '../models/comment';
+import { Picture } from '../models/picture';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,18 @@ export class PostService {
   async getPostList(tab : string, sorting : string) : Promise<Post[]>{
     let x = await lastValueFrom(this.http.get<Post[]>("http://localhost:7007/api/Comments/GetPosts/" + tab + "/" + sorting));
     console.log(x);
+    return x;
+  }
+
+  //Effacer les images
+  async deletePictures(listBinImages : Picture[]) : Promise<void>
+  {
+    await lastValueFrom(this.http.post<Picture[]>("http://localhost:7007/api/Comments/DeletePicture/", listBinImages));
+  }
+
+  async AddPictures(formData : FormData)
+  {
+    let x = await lastValueFrom(this.http.post<Picture[]>("http://localhost:7007/api/Comments/AddPictures", formData));
     return x;
   }
 

@@ -11,6 +11,8 @@ export class CarrouselFullPostComponent {
 
   @Input() listimages : Picture[] = [];
 
+  @Input() toggleEdit : boolean = false;
+
   @ViewChild("commentWithPicture", {static:false}) pictureInput?: ElementRef;
 
   //@ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
@@ -35,5 +37,12 @@ export class CarrouselFullPostComponent {
       perView: Math.ceil(window.innerWidth / 400)
     });
     glide.mount();
+  }
+
+  public removepicture(id : number) {
+
+    this.listimages.splice(id,1);
+    this.initGlide();
+
   }
 }

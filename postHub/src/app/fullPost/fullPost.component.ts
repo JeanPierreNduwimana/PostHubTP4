@@ -19,6 +19,7 @@ export class FullPostComponent implements OnInit {
   newComment : string = "";
   newMainCommentText : string = "";
   listImages : Picture[] = [];
+  listBinImages : Picture[] = [];
 
   // Booléens sus pour cacher / afficher des boutons
   isAuthor : boolean = false;
@@ -75,7 +76,36 @@ export class FullPostComponent implements OnInit {
     });
     glide.mount();
   }
+
+  public annulerModification()
+  {
+    this.toggleMainCommentEdit = false;
+    if(this.listBinImages.length > 0)
+    {
+      this.listBinImages.forEach( p =>
+        {
+          this.listImages.push(p);
+        })
+    }
+
+    this.listBinImages = [];
+  }
   
+  public async removepicture(id : number) {
+
+    for( let i : number = 0; i < this.listImages.length; i++)
+    {
+      if(this.listImages[i].id == id)
+      {
+        this.listBinImages.push(this.listImages[i]);
+        this.listImages.splice(i,1);
+        console.log(this.listBinImages);
+        return;
+      }
+    }
+
+  }
+
   async toggleSorting(){
     if(this.post == null) return;
     this.post = await this.postService.getPost(this.post.id, this.sorting);
@@ -144,15 +174,48 @@ export class FullPostComponent implements OnInit {
 
   // Modifier le commentaire principal du post
   async editMainComment(){
+
+    let formdata = new FormData;
+    let i : number = 0; 
+    let file = this.pictureInput?.nativeElement.files[0];
+    let listpictures : Picture[] = [];
+    if(file == null)
+    {
+      console.log("aille");
+      return;
+    }
+    else{
+      while(file != null && file != undefined){
+        formdata.append(i.toString(), file, file.name);
+        i++;
+        file = this.pictureInput?.nativeElement.files[i];
+      }
+      listpictures = await this.postService.AddPictures(formdata);
+      console.log(listpictures);
+    }
+
     if(this.post == null || this.post.mainComment == null) return;
 
     let commentDTO = {
-      text : this.newMainCommentText
+      text : this.newMainCommentText,
+      pictures : listpictures
     }
 
+    if(this.listBinImages.length > 0)
+    {
+      await this.postService.deletePictures(this.listBinImages);
+    }
+    
     let newMainComment = await this.postService.editComment(commentDTO, this.post?.mainComment.id);
     this.post.mainComment = newMainComment;
     this.toggleMainCommentEdit = false;
+
+    
+
+    this.listBinImages = [];
+    this.listImages = [];
+    this.listImages = newMainComment.pictures;
+    console.log(this.listImages);
   }
 
   // Supprimer le commentaire principal du post. Notez que ça ne va pas supprimer le post en entier s'il y a le moindre autre commentaire.
