@@ -45,4 +45,18 @@ export class UserService {
     console.log(x);
   }
 
+
+  //Changer son mot de passe
+  async ChangerMotDePasse(formData : FormData)
+  {
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangerMotDePasse", formData));
+    console.log(x);
+
+    if(x.message != null)
+    {
+      alert(x.message);
+    }
+    
+  }
+
 }

@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -17,7 +18,7 @@ export class ProfileComponent implements OnInit {
 
   username : string | null = null;
 
-  constructor(public userService : UserService) { }
+  constructor(public userService : UserService, public router : Router) { }
 
   ngOnInit() {
     this.userIsConnected = localStorage.getItem("token") != null;
@@ -44,5 +45,20 @@ export class ProfileComponent implements OnInit {
     } else {
       console.error("No file selected");
     }
+ }
+
+ async ChangerMotDePasse(){
+
+  if(this.newPassword != this.newPasswordConfirm)
+  {
+    alert("Mot de passe non-identiques");
+    return;
+  }
+
+  let formData = new FormData();
+  formData.append("oldPassword", this.oldPassword);
+  formData.append("newPassword",this.newPassword)
+  await this.userService.ChangerMotDePasse(formData);
+  this.router.navigate(["/postList", "index"]);
  }
 }
