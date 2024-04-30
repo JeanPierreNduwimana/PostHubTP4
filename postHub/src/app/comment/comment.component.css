@@ -77,7 +77,7 @@
 }
 
 .upvoted, .score button:hover:first-child{
-    color:#45ff73 !important; 
+    color:#ffa600 !important; 
 }
 
 .downvoted, .score button:hover:last-child{
@@ -139,7 +139,7 @@
 }
 
 .postFooter>div:last-child>button{
-    background-color:#25dc53;
+    background-color:#ffa600;
     font-weight:bold;
     border:none;
     border-radius:15px;
