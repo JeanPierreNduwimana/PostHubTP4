@@ -98,4 +98,8 @@ export class PostService {
     console.log(x);
   }
 
+  //supprimer une photo d'un commentaire
+  async supprimerPhoto(commentId : number, pictureId : number){
+    let x = await lastValueFrom(this.http.delete<any>("http://localhost:7007/api/Comments/RemovePicture/" + commentId + "/" + pictureId))
+  }
 }

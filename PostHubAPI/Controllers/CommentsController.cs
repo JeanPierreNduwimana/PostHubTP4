@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Formats.Asn1;
 using System.Linq;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using NuGet.Protocol.Plugins;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using PostHubAPI.Models.DTOs;
@@ -368,6 +370,28 @@ namespace PostHubAPI.Controllers
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
             return Ok(new { Message = "Vote complété." });
+        }
+
+        [HttpDelete("{CommentId}/{PictureId}")]
+        [Authorize]
+        public async Task<ActionResult> RemovePicture(int CommentId, int PictureId)
+        {
+            Comment? comment = await _commentService.GetComment(CommentId);
+            if (comment == null) return NotFound();
+
+            Picture? picture = await _pictureService.FindPicture(PictureId);
+            if (picture == null) return NotFound();
+
+            foreach (var p in comment.Pictures)
+            {
+                if (p.Id == picture.Id)
+                {
+                    comment.Pictures.Remove(p);
+                    await _pictureService.DeleteOnePicture(picture);
+                    return Ok(new { Message = "Suppresion de la photo réussi" });
+                }
+            }
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpDelete("{commentId}")]
