@@ -52,6 +52,7 @@ export class ProfileComponent implements OnInit {
         try {
           await this.userService.changeAvatar(this.username, formData);
           console.log("Avatar changed successfully");
+          window.location.reload();
         } catch (error) {
           console.error("Error while changing avatar:", error);
         }
@@ -73,12 +74,12 @@ export class ProfileComponent implements OnInit {
   formData.append("oldPassword", this.oldPassword);
   formData.append("newPassword",this.newPassword)
   await this.userService.ChangerMotDePasse(formData);
-  this.router.navigate(["/postList", "index"]);
+  window.location.reload();
  }
 
  async MakeModerator()
  {
-  console.log("hello");
+  
   if(this.newAdmin != null)
     this.userService.MakeModerator(this.newAdmin);
   else
