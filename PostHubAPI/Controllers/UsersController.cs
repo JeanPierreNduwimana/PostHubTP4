@@ -53,7 +53,8 @@ namespace PostHubAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(LoginDTO login)
         {
-            User user = await _userManager.FindByNameAsync(login.Username);
+            User? user = await TrouverUser(login);
+
             if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
             {
                 IList<string> roles = await _userManager.GetRolesAsync(user);
@@ -84,6 +85,24 @@ namespace PostHubAPI.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new { Message = "Le nom d'utilisateur ou le mot de passe est invalide." });
             }
+        }
+
+        private async Task<User?> TrouverUser(LoginDTO loginuser)
+        {
+            User user = await _userManager.FindByNameAsync(loginuser.Username);
+            User useremail = await _userManager.FindByEmailAsync(loginuser.Username);
+
+            if(user != null)
+            {
+                return user;
+            }
+
+            if(useremail != null)
+            {
+                return useremail;
+            }
+
+            return null;
         }
 
         [HttpPost("{username}")]
@@ -156,6 +175,33 @@ namespace PostHubAPI.Controllers
                                        new { Message = "Custom picture not found. Please upload a profile picture." });
                 }
             }
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> ChangerMotDePasse()
+        {
+            string? mdpActuelle = Request.Form["oldPassword"];
+            string? mdpNouveau = Request.Form["newPassword"];
+
+            if (mdpActuelle == null || mdpNouveau == null)
+            {
+                return BadRequest();
+            }
+
+            User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            if(await _userManager.CheckPasswordAsync(user, mdpActuelle))
+            {
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, mdpNouveau);
+            }
+
+            return Ok(new { Message = "Changement de mot de passe reussi" });
+
         }
     }
 }
