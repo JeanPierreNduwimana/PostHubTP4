@@ -36,6 +36,15 @@ namespace PostHubAPI.Services
 
         }
 
+        public async Task DeleteOnePicture(Picture picture) {
+            if (picture == null) 
+            {
+                return;
+            }
+            _context.Pictures.Remove(picture);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task<Picture[]> EditPicture(Picture picture, IFormFile file, Image image) {
 

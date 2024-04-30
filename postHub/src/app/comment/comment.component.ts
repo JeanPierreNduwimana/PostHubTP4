@@ -173,4 +173,24 @@ export class CommentComponent implements OnInit {
     }
   }
 
+  //Delete a picture
+  async DeletePicutre(id : number){
+    if(this.isAuthor != false){
+      console.log("Est auteur")
+      if(this.comment != undefined){
+        if(id != undefined){
+          this.listImages = this.comment.pictures;
+          for(let i = 0; i <= this.listImages.length; i++){
+            let image : Picture = this.listImages[i]
+            if(image.id == id){
+              this.listImages.splice(i, 1);
+              break;
+            }
+          }
+          this.postService.supprimerPhoto(this.comment?.id, id);
+          console.log("Réussie")
+        }
+      }
+    }
+  }
 }

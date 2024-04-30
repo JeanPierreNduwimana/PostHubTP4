@@ -2,7 +2,6 @@
     <div class="glide__track" data-glide-el="track">
       <ul class="glide__slides">
         <li class="glide__slide" style="height: 100px;" #glideitems *ngFor="let picture of listimages">
-
             <div style="position:relative;">
               <button (click)="removepicture(picture.id)" *ngIf="toggleEdit" type="submit" style="right:0px; position: absolute;">
                  <span>&times;</span>
