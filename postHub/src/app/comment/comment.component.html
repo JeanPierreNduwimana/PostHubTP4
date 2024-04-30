@@ -18,9 +18,9 @@
     </div>
     <div class="commentPictures" *ngIf="comment.pictures.length > 0">
       <!-- Des images pourraient être affichées ici... -->
-      <ul class="glide__slides">
-        <li class="glide__slide" style="height: 100px;" #glideitems *ngFor="let picture of comment.pictures">
-          <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+      <ul style="display: flex; gap: 20px;">
+        <li style="list-style: none; height: 100px;" *ngFor="let picture of comment.pictures">
+          <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
         </li>
       </ul>
     </div>
