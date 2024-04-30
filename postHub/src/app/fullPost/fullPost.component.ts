@@ -118,15 +118,12 @@ export class FullPostComponent implements OnInit {
       return;
     }
 
-
     //Pour envoyer les photos au serveurs.
     let formdata = new FormData;
     let i : number = 0; 
     formdata.append("textComment", this.newComment)
     console.log(this.pictureInput?.nativeElement.filesUploadByUser)
-
     let file = this.pictureInput?.nativeElement.files[0];
-
     while(file != null && file != undefined){
       formdata.append("image" + i, file, file.name);
       i++;
@@ -134,7 +131,6 @@ export class FullPostComponent implements OnInit {
       
     }
     this.post?.mainComment?.subComments?.push(await this.postService.postComment(formdata, this.post.mainComment.id));
-
     this.newComment = "";
   }
 

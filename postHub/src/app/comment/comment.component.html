@@ -20,7 +20,9 @@
       <!-- Des images pourraient être affichées ici... -->
       <ul style="display: flex; gap: 20px;">
         <li style="list-style: none; height: 100px;" *ngFor="let picture of comment.pictures">
-          <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+          <a href="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
+            <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+          </a>
         </li>
       </ul>
     </div>
