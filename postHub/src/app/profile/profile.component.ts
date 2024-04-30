@@ -24,4 +24,25 @@ export class ProfileComponent implements OnInit {
     this.username = localStorage.getItem("username");
   }
 
+  @ViewChild("fileUploadViewChild", {static:false}) pictureInput?: ElementRef;
+
+  async ChangeAvatar(){
+    let fileInput = this.pictureInput?.nativeElement;
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+      let file = fileInput.files[0];
+      let formData = new FormData();
+      formData.append("UserNewAvatar", file, file.name);
+      
+      if (this.username) {
+        try {
+          await this.userService.changeAvatar(this.username, formData);
+          console.log("Avatar changed successfully");
+        } catch (error) {
+          console.error("Error while changing avatar:", error);
+        }
+      }
+    } else {
+      console.error("No file selected");
+    }
+ }
 }

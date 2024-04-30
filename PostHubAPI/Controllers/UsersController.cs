@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol.Plugins;
 using PostHubAPI.Models;
 using PostHubAPI.Models.DTOs;
+using PostHubAPI.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,11 +19,13 @@ namespace PostHubAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly PictureService _pictureService;
         readonly UserManager<User> _userManager;
 
-        public UsersController(UserManager<User> userManager)
+        public UsersController(UserManager<User> userManager, PictureService pictureService)
         {
             _userManager = userManager;
+            _pictureService = pictureService;
         }
 
         [HttpPost]
@@ -80,6 +83,78 @@ namespace PostHubAPI.Controllers
             {
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new { Message = "Le nom d'utilisateur ou le mot de passe est invalide." });
+            }
+        }
+
+        [HttpPost("{username}")]
+        public async Task<IActionResult> ChangeAvatar(String username)
+        {
+            User user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                new { Message = "L'utilisateur n'à pas pue être trouver!" });
+            }
+
+            IFormCollection formcollection = await Request.ReadFormAsync();
+            IFormFile? file = formcollection.Files.GetFile("UserNewAvatar");
+            Picture picture = new Picture();
+
+            try
+            {
+                Image image = Image.Load(file.OpenReadStream());
+                if (file != null)
+                {
+                    picture.Id = 0;
+                    picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    picture.MimeType = file.ContentType;
+                    user.FileName = picture.FileName;
+                    user.MimeType = picture.MimeType;
+                }
+                await _pictureService.EditAvatar(picture, image);
+                await _pictureService.AjoutPhoto(picture);
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                   new { Message = "L'image n'à pas pue être enregistrer!" });
+            }
+
+            return Ok(new { Message = "L'avatar à été changer avec succès!" });
+        }
+
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetAvatar(String username)
+        {
+            User user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                   new { Message = "L'utilisateur n'a pas pu être trouvé !" });
+            }
+
+            if (user.FileName != null && user.MimeType != null)
+            {
+                Picture picture = new Picture();
+                picture.FileName = user.FileName;
+                picture.MimeType = user.MimeType;
+                byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/" + picture.FileName);
+                return File(bytes, picture.MimeType);
+            }
+            else
+            {
+                if (user.FileName == null && user.MimeType == null)
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/default.png");
+                    return File(bytes, "image/png");
+                }else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound,
+                                       new { Message = "Custom picture not found. Please upload a profile picture." });
+                }
             }
         }
     }

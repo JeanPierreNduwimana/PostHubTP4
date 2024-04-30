@@ -39,4 +39,10 @@ export class UserService {
     localStorage.setItem("username", x.username);
   }
 
+  //Changer son avatar
+  async changeAvatar(username : string, formdata : any){
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangeAvatar/" + username, formdata))
+    console.log(x);
+  }
+
 }

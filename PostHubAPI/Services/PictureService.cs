@@ -55,8 +55,13 @@ namespace PostHubAPI.Services
             return pictures.ToArray();
         }
 
-        public async Task AjoutPhoto(Picture picture)
+        public async Task<Picture> EditAvatar(Picture picture, Image image)
+        {
+            image.Save(Directory.GetCurrentDirectory() + "/images/avatar/" + picture.FileName);
+            return picture;
+        }
 
+        public async Task AjoutPhoto(Picture picture)
         {
 
             if (!IsContextNull())
