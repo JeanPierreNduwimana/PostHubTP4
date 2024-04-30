@@ -404,6 +404,9 @@ namespace PostHubAPI.Controllers
             if (comment == null) return NotFound();
 
             if (user == null || comment.User != user) return Unauthorized();
+            await _pictureService.DeletePictures(comment.Pictures);
+
+
 
             do
             {
@@ -421,11 +424,13 @@ namespace PostHubAPI.Controllers
                 {
                     Comment? deletedComment = await _commentService.HardDeleteComment(comment);
                     if (deletedComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+                    await _pictureService.DeletePictures(deletedComment.Pictures);
                 }
                 else
                 {
                     Comment? deletedComment = await _commentService.SoftDeleteComment(comment);
                     if (deletedComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+                    //_postService.DeletePictures(comment.Pictures);
                     break;
                 }
 
