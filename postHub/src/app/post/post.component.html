@@ -22,9 +22,11 @@
     </div>
     <!-- Des images pourraient être affichées ici (pas strictement obligatoire...) -->
 
-    <div *ngFor="let picture of  this.post?.mainComment?.pictures">
-      <img alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
-    </div>
+    <ul style="display: flex; gap: 20px;">
+      <li style="list-style: none; height: 100px;" *ngFor="let picture of  this.post?.mainComment?.pictures">
+        <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+      </li>
+    </ul>
   </div>
 
   <!-- Votes du post. Ils ne peuvent pas être modifiés ici, seulement dans le composant fullPost une fois ce post cliqué -->
