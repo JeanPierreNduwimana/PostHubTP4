@@ -73,7 +73,6 @@ export class CommentComponent implements OnInit {
       alert("Écris un commentaire niochon !");
       return;
     }
-
     if(this.comment == null) return;
     if(this.comment.subComments == null) this.comment.subComments = [];
 
@@ -88,14 +87,11 @@ export class CommentComponent implements OnInit {
     while(file != null && file != undefined){
       formdata.append("image" + i, file, file.name);
       i++;
-      file = this.pictureInput?.nativeElement.files[i];
-      
+
+      file = this.pictureInput?.nativeElement.files[i]; 
     }
     
-    console.log(formdata);
     this.comment.subComments.push(await this.postService.postComment(formdata, this.comment.id));
-    
-
 
     this.replyToggle = false;
     this.repliesToggle = true;
