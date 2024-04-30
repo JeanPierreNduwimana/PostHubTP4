@@ -3,21 +3,43 @@
 </div>
 
 <div *ngIf="userIsConnected">
-  <div id="profileTitle">Votre profil</div>
-  <img [src]="'http://localhost:7007/api/Users/GetAvatar/' + username" alt="Avatar">
-  <div class="ChangeAvatar">
-    <!-- Ajouter un input de type file ici ne serait pas bête du tout -->
-    <input #fileUploadViewChild type="file" name="monImage" accept="images/*">
+
+  <div style="display: flex; gap: 80px;">
+  
+    <div>
+
+      <div *ngIf="!IsUserAdmin && !IsUserModerator " id="profileTitle">Votre profil</div>
+      <div *ngIf="IsUserAdmin" id="profileTitle">Bravo vous êtes administrateur 🥳</div>
+      <div *ngIf="IsUserModerator" id="profileTitle">Vous êtes un moderateur</div>
+      <img [src]="'http://localhost:7007/api/Users/GetAvatar/' + username" alt="Avatar">
+      <div class="ChangeAvatar">
+        <!-- Ajouter un input de type file ici ne serait pas bête du tout -->
+        <input #fileUploadViewChild type="file" name="monImage" accept="images/*">
+      </div>
+      <div class="bouttonAvatar">
+        <button [routerLink]="['/postList', 'index']" (click)="ChangeAvatar()">Modifier</button>
+      </div>
+      <!-- Le formulaire pour changer le mot de passe vous est déjà fourni -->
+      <div class="profile">
+        <div>Modifier le mot de passe</div>
+        <input type="password" name="oldPassword" id="oldPassword" placeholder="Mot de passe actuel"
+          [(ngModel)]="oldPassword">
+        <input type="password" name="newPassword" id="newPassword" placeholder="Nouveau mot de passe"
+          [(ngModel)]="newPassword">
+        <input type="password" name="newPasswordConfirm" id="newPasswordConfirm"
+          placeholder="Confirmer le nouveau mot de passe" [(ngModel)]="newPasswordConfirm">
+        <button (click)="ChangerMotDePasse()">Modifier</button>
+      </div>
+    
+    </div>
+  
+    <div *ngIf="IsUserAdmin" class="profile">
+      <div id="profileTitle" >Ajouter un moderateur</div>
+      <input type="text" name="username" id="oldPassword" placeholder="nom d'utilisateur"
+        [(ngModel)]="newAdmin">
+      <button (click)="MakeModerator()">Modifier</button>
+    </div>
   </div>
-  <div class="bouttonAvatar">
-    <button [routerLink]="['/postList', 'index']" (click)="ChangeAvatar()">Modifier</button>
-  </div>
-  <!-- Le formulaire pour changer le mot de passe vous est déjà fourni -->
-  <div class="profile">
-    <div>Modifier le mot de passe</div>
-    <input type="password" name="oldPassword" id="oldPassword" placeholder="Mot de passe actuel" [(ngModel)]="oldPassword">
-    <input type="password" name="newPassword" id="newPassword" placeholder="Nouveau mot de passe" [(ngModel)]="newPassword">
-    <input type="password" name="newPasswordConfirm" id="newPasswordConfirm" placeholder="Confirmer le nouveau mot de passe" [(ngModel)]="newPasswordConfirm">
-    <button (click)="ChangerMotDePasse()" >Modifier</button>
-  </div>
+ 
+  
 </div>

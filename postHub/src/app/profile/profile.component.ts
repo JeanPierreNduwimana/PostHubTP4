@@ -17,12 +17,26 @@ export class ProfileComponent implements OnInit {
   newPasswordConfirm : string = "";
 
   username : string | null = null;
+  newAdmin : string | null = null;
+  IsUserAdmin : boolean = false;
+  IsUserModerator : boolean = false;
 
   constructor(public userService : UserService, public router : Router) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.userIsConnected = localStorage.getItem("token") != null;
     this.username = localStorage.getItem("username");
+
+     if(this.username != null)
+    {
+      this.IsUserAdmin = await this.userService.IsUserAdmin(this.username);
+
+      if(!this.IsUserAdmin)
+      {
+        this.IsUserModerator = await this.userService.IsUserModerator(this.username);
+      }
+    }
+
   }
 
   @ViewChild("fileUploadViewChild", {static:false}) pictureInput?: ElementRef;
@@ -60,5 +74,14 @@ export class ProfileComponent implements OnInit {
   formData.append("newPassword",this.newPassword)
   await this.userService.ChangerMotDePasse(formData);
   this.router.navigate(["/postList", "index"]);
+ }
+
+ async MakeModerator()
+ {
+  console.log("hello");
+  if(this.newAdmin != null)
+    this.userService.MakeModerator(this.newAdmin);
+  else
+    alert("Le nom d'utilisateur est vide");  
  }
 }

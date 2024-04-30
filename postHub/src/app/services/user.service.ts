@@ -59,4 +59,26 @@ export class UserService {
     
   }
 
+  async IsUserAdmin(username : string) : Promise<boolean>
+  {
+      let x = await lastValueFrom(this.http.get<boolean>("http://localhost:7007/api/Users/IsUserAdmin/" + username));
+
+      return x;
+  }
+
+  async IsUserModerator(username : string) : Promise<boolean>
+  {
+    let x = await lastValueFrom(this.http.get<boolean>("http://localhost:7007/api/Users/IsUserModerator/" + username));
+
+      return x;
+  }
+
+  async MakeModerator(username : string)
+  {
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/MakeModerator/" + username, null));
+    if(x.message != null)
+    {
+      alert(x.message);
+    }
+  }
 }

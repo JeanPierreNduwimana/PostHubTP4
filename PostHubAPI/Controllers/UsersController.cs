@@ -203,5 +203,63 @@ namespace PostHubAPI.Controllers
             return Ok(new { Message = "Changement de mot de passe reussi" });
 
         }
+
+        [HttpPost()]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> MakeAdmin(string username)
+        {
+
+            User? user = await _userManager.FindByIdAsync(username);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = "Cet utilisateur n'existe pas." });
+            }
+
+            await _userManager.AddToRoleAsync(user, "admin");
+            return Ok(new { Message = user + " est maintenant admin!" });
+        }
+
+        [HttpPost("{username}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> MakeModerator(string username)
+        {
+            User? user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = "Cet utilisateur n'existe pas." });
+            }
+
+            await _userManager.AddToRoleAsync(user, "moderator");
+            return Ok(new { Message = user + " est maintenant moderateur!" });
+        }
+
+
+        [HttpGet("{username}")]
+        public async Task<bool> IsUserAdmin(string username)
+        {
+            User? user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return await _userManager.IsInRoleAsync(user, "admin");
+        }
+
+        [HttpGet("{username}")]
+        public async Task<bool> IsUserModerator(string username)
+        {
+            User? user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return await _userManager.IsInRoleAsync(user, "moderator");
+        }
     }
 }
