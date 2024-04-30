@@ -4,6 +4,7 @@
 
 <div *ngIf="userIsConnected">
   <div id="profileTitle">Votre profil</div>
+  <img [src]="'http://localhost:7007/api/Users/GetAvatar/' + username" alt="Avatar">
   <div class="ChangeAvatar">
     <!-- Ajouter un input de type file ici ne serait pas bête du tout -->
     <input #fileUploadViewChild type="file" name="monImage" accept="images/*">
