@@ -220,4 +220,24 @@ export class FullPostComponent implements OnInit {
     await this.postService.deleteComment(this.post.mainComment.id);
     this.router.navigate(["/"]);
   }
+
+    //Delete a picture
+    async DeletePicutre(id : number){
+      if(this.isAuthor != false){
+        console.log("Est auteur")
+        if(this.post != undefined){
+          if(id != undefined){
+            for(let i = 0; i <= this.listImages.length; i++){
+              let image : Picture = this.listImages[i]
+              if(image.id == id){
+                this.listImages.splice(i, 1);
+                break;
+              }
+            }
+            this.postService.supprimerPhoto(this.post?.id, id);
+            console.log("Réussie")
+          }
+        }
+      }
+    }
 }
