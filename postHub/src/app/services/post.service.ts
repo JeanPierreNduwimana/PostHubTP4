@@ -107,4 +107,10 @@ export class PostService {
   async supprimerPhotoPost(commentId : number, pictureId : number){
     let x = await lastValueFrom(this.http.delete<any>("http://localhost:7007/api/Comments/RemovePicturePost/" + commentId + "/" + pictureId))
   }
+
+  //Report a post/comment
+  async report(commentId : number){
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Comments/Signalement/" + commentId, null))
+    console.log(x);
+  }
 }

@@ -239,5 +239,12 @@ export class FullPostComponent implements OnInit {
           }
         }
       }
+  }
+
+  async SignalementPost(id : number){
+    if(id != undefined){
+      this.postService.report(id);
+      console.log(this.post?.mainComment?.id)
     }
+  }
 }

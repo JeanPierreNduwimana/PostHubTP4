@@ -465,6 +465,13 @@ namespace PostHubAPI.Controllers
             return Ok(new { Message = "Commentaire supprimé." });
         }
 
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Signalement(int id) 
+        {
+            await _commentService.reportComment(id);
+            return Ok(new { Message = "Commentaire signalé."});
+        }
+
         private static IEnumerable<Post> GetPopularPosts(Hub hub, int qty)
         {
             return hub.Posts!.OrderByDescending(p => p.MainComment?.Upvoters?.Count - p.MainComment?.Downvoters?.Count).Take(qty);
