@@ -213,3 +213,13 @@
     width:20px;
     cursor:pointer;
 }
+.buttonSuppresionImage{
+    background:#353546;
+    border:solid 2px #5e5e75;
+    margin-bottom: 150;
+    color:white;
+    border-radius:15px;
+    text-align: center;
+    width:20px;
+    cursor:pointer;
+}

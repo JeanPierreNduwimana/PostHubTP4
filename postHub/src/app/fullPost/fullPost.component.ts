@@ -221,8 +221,8 @@ export class FullPostComponent implements OnInit {
     this.router.navigate(["/"]);
   }
 
-    //Delete a picture
-    async DeletePicutre(id : number){
+  //Delete a picture
+  async DeletePicutre(id : number){
       if(this.isAuthor != false){
         console.log("Est auteur")
         if(this.post != undefined){
@@ -234,7 +234,7 @@ export class FullPostComponent implements OnInit {
                 break;
               }
             }
-            this.postService.supprimerPhoto(this.post?.id, id);
+            this.postService.supprimerPhotoPost(this.post?.id, id);
             console.log("Réussie")
           }
         }
