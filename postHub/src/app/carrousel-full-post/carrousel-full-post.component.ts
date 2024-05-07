@@ -3,6 +3,7 @@ import Glide from '@glidejs/glide';
 import { Picture } from '../models/picture';
 import { PostService } from '../services/post.service';
 import { FullPostComponent } from '../fullPost/fullPost.component';
+import { Comment } from '../models/comment';
 
 @Component({
   selector: 'app-carrousel-full-post',
@@ -12,15 +13,16 @@ import { FullPostComponent } from '../fullPost/fullPost.component';
 export class CarrouselFullPostComponent {
 
   @Input() listimages : Picture[] = [];
-
+  @Input() isAuteur : boolean = false;
   @Input() toggleEdit : boolean = false;
+  @Input() comment : Comment | null = null;
 
   @ViewChild("commentWithPicture", {static:false}) pictureInput?: ElementRef;
 
   //@ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
   @ViewChildren('glideitems') glideitems : QueryList<any> = new QueryList();
   
-  constructor(public postService : PostService, public postComponent : FullPostComponent){}
+  constructor(public postService : PostService){}
 
   ngAfterViewInit() {
     this.glideitems.changes.subscribe(e => {
@@ -50,18 +52,18 @@ export class CarrouselFullPostComponent {
 
    //Delete a picture
    async DeletePicutre(id : number){
-    if(this.postComponent.isAuthor != false){
+    if(this.isAuteur != false){
       console.log("Est auteur")
-      if(this.postComponent.post != undefined){
+      if(this.comment != null){
         if(id != undefined){
-          for(let i = 0; i <= this.postComponent.listImages.length; i++){
+          for(let i = 0; i <= this.listimages.length; i++){
             let image : Picture = this.listimages[i]
             if(image.id == id){
               this.listimages.splice(i, 1);
               break;
             }
           }
-          this.postService.supprimerPhotoPost(this.postComponent.post?.id, id);
+          this.postService.supprimerPhotoPost(this.comment.id, id);
           console.log("Réussie")
         }
       }

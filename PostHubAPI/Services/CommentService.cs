@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -25,7 +26,6 @@ namespace PostHubAPI.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
         public async Task<Comment?> GetComment(int id)
         {
             if (IsContextNull()) return null;
