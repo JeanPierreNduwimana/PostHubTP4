@@ -193,4 +193,11 @@ export class CommentComponent implements OnInit {
       }
     }
   }
+
+  async SignalementPost(id : number){
+    if(id != undefined){
+      this.comment?.isReported == true;
+      this.postService.report(id);
+    }
+  }
 }
