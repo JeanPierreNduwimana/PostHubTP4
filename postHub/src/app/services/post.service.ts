@@ -102,4 +102,9 @@ export class PostService {
   async supprimerPhoto(commentId : number, pictureId : number){
     let x = await lastValueFrom(this.http.delete<any>("http://localhost:7007/api/Comments/RemovePicture/" + commentId + "/" + pictureId))
   }
+
+  //supprimer une photo d'un commentaire
+  async supprimerPhotoPost(commentId : number, pictureId : number){
+    let x = await lastValueFrom(this.http.delete<any>("http://localhost:7007/api/Comments/RemovePicturePost/" + commentId + "/" + pictureId))
+  }
 }
