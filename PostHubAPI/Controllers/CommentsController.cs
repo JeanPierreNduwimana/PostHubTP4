@@ -142,7 +142,7 @@ namespace PostHubAPI.Controllers
 
                 pictures = await Recuperaptiondesphotos();
 
-                if(formcollection.Files.Count > pictures.Count)
+                if(formcollection.Files.Count < pictures.Count)
                 {
                     return BadRequest(new { Message = "Il y a un problème avec les images ajoutés" });
                 }
@@ -179,10 +179,10 @@ namespace PostHubAPI.Controllers
             IFormCollection formCollection = await Request.ReadFormAsync();
             int i = 0;
 
-            while (formCollection.Files.GetFile("image" + i) != null)
+            while (formCollection.Files.GetFile(i.ToString()) != null)
             {
 
-                IFormFile? file = formCollection.Files.GetFile("image" + i);
+                IFormFile? file = formCollection.Files.GetFile(i.ToString());
 
                 if (file != null)
                 {
@@ -336,16 +336,28 @@ namespace PostHubAPI.Controllers
 
         [HttpPut("{commentId}")]
         [Authorize]
-        public async Task<ActionResult<CommentDisplayDTO>> PutComment(int commentId, CommentDTO commentDTO)
+        public async Task<ActionResult<CommentDisplayDTO>> PutComment(int commentId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            List<Picture> pictures = new List<Picture>();
+            try
+            {
+                pictures = await Recuperaptiondesphotos();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Il y a un problème avec les images ajoutés" });
+            }
 
             Comment? comment = await _commentService.GetComment(commentId);
             if (comment == null) return NotFound();
 
             if (user == null || comment.User != user) return Unauthorized();
 
-            Comment? editedComment = await _commentService.EditComment(comment, commentDTO.Text, commentDTO.pictures);
+            string texteCommentaire = Request.Form["text"];
+
+            Comment? editedComment = await _commentService.EditComment(comment, texteCommentaire, pictures);
             if(editedComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             return Ok(new CommentDisplayDTO(editedComment, true, user));

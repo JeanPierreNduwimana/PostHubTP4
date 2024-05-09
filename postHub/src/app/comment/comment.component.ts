@@ -80,15 +80,13 @@ export class CommentComponent implements OnInit {
     let formdata = new FormData;
     let i : number = 0; 
     formdata.append("textComment", this.newComment)
-    console.log(this.pictureInput?.nativeElement.filesUploadByUser)
 
     let file = this.pictureInput?.nativeElement.files[0];
 
     while(file != null && file != undefined){
-      formdata.append("image" + i, file, file.name);
+      formdata.append(i.toString(), file, file.name);
       i++;
-
-      file = this.pictureInput?.nativeElement.files[i]; 
+      file = this.pictureInput?.nativeElement.files[i];
     }
     
     this.comment.subComments.push(await this.postService.postComment(formdata, this.comment.id));
@@ -103,11 +101,18 @@ export class CommentComponent implements OnInit {
 
     if(this.comment == null || this.editedText == undefined) return;
 
-    let commentDTO = {
-      text : this.editedText
+    let formdata = new FormData;
+    let i : number = 0;
+    formdata.append("text", this.editedText);
+    let file = this.pictureInput?.nativeElement.files[0];
+    while(file != null && file != undefined){
+      formdata.append(i.toString(), file, file.name);
+      i++;
+      file = this.pictureInput?.nativeElement.files[i];
     }
 
-    let newMainComment = await this.postService.editComment(commentDTO, this.comment.id);
+
+    let newMainComment = await this.postService.editComment(formdata, this.comment.id);
     this.comment = newMainComment;
     this.editedText = this.comment.text;
     this.editMenu = false;
