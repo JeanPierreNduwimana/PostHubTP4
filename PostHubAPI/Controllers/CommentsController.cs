@@ -436,15 +436,18 @@ namespace PostHubAPI.Controllers
         }
 
         [HttpDelete("{commentId}")]
-        [Authorize]
+        [Authorize(Roles = "moderator")]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             Comment? comment = await _commentService.GetComment(commentId);
             if (comment == null) return NotFound();
+            if (user == null || (!await _userManager.IsInRoleAsync(user, "moderator") && comment.User != user))
+            {
+                return Unauthorized();
+            }
 
-            if (user == null || comment.User != user) return Unauthorized();
             await _pictureService.DeletePictures(comment.Pictures);
 
 
@@ -488,6 +491,23 @@ namespace PostHubAPI.Controllers
             await _commentService.reportComment(id);
             return Ok(new { Message = "Commentaire signalé."});
         }
+
+        [HttpGet]
+        [DisableRequestSizeLimit]
+        [Authorize(Roles = "moderator")]
+        public async Task<IActionResult> GetReported() 
+        {
+            List<Comment> commentsSignale = await _commentService.GetReportedComment();
+            List<CommentDisplayDTO> comments = new List<CommentDisplayDTO>();
+
+            foreach (Comment comment in commentsSignale) {
+                CommentDisplayDTO monCommentaire = new CommentDisplayDTO(comment, false, null);
+                comments.Add(monCommentaire);
+            }
+
+            return Ok(comments);
+        }
+
 
         private static IEnumerable<Post> GetPopularPosts(Hub hub, int qty)
         {

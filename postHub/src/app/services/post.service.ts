@@ -120,4 +120,10 @@ export class PostService {
     let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Comments/Signalement/" + commentId, null))
     console.log(x);
   }
+
+  //Recevoir les signalement
+  async getReported(){
+    let x = await lastValueFrom(this.http.get<Comment[]>("http://localhost:7007/api/Comments/GetReported"))
+    return x;
+  }
 }

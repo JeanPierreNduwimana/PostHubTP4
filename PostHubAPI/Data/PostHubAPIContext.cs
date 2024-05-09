@@ -30,6 +30,7 @@ namespace PostHubAPI.Data
 
             );
 
+            //Ajout de l'admin
             PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
             User u1 = new User
             {
@@ -46,6 +47,23 @@ namespace PostHubAPI.Data
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(
 
                 new IdentityUserRole<string> { UserId = u1.Id, RoleId = "1" }
+            );
+
+            //Ajout du Modo
+            PasswordHasher<User> passwordHasherModo = new PasswordHasher<User>();
+            User modo1 = new User
+            {
+                Id = "22222222-2222-2222-2222-222222222222",
+                UserName = "UserModo",
+                NormalizedUserName = "USERMODO",
+                Email = "m@m.m",
+                NormalizedEmail = "M@M.M"
+            };
+            modo1.PasswordHash = passwordHasherModo.HashPassword(modo1, "Salut1!");
+            modelBuilder.Entity<User>().HasData(modo1);
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+
+                new IdentityUserRole<string> { UserId = modo1.Id, RoleId = "2"}
             );
         }
 
