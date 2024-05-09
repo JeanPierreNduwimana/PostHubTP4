@@ -10,7 +10,11 @@
 
       <div *ngIf="!IsUserAdmin && !IsUserModerator " id="profileTitle">Votre profil</div>
       <div *ngIf="IsUserAdmin" id="profileTitle">Bravo vous êtes administrateur 🥳</div>
-      <div *ngIf="IsUserModerator" id="profileTitle">Vous êtes un moderateur</div>
+      <div *ngIf="IsUserModerator" id="profileTitle">Vous êtes un moderateur
+        <div class="bouttonModo">
+          <button [routerLink]="['/reports']">Voir les signalements</button>
+        </div>
+      </div>
       <div>Photo de profil</div>
       <img [src]="'http://localhost:7007/api/Users/GetAvatar/' + username" alt="Avatar">
       <div class="ChangeAvatar">

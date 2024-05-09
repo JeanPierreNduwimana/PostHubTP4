@@ -62,6 +62,10 @@ namespace PostHubAPI.Controllers
                 foreach (string role in roles)
                 {
                     authClaims.Add(new Claim(ClaimTypes.Role, role));
+                    if (user.UserName == "UserModo")
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                    }
                 }
                 authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
                 SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8

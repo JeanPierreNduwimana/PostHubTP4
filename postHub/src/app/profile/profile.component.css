@@ -77,3 +77,15 @@
     margin-left: 5px;
     cursor:pointer;
 }
+
+.bouttonModo button{
+    background-color:#ffa600;
+    font-weight:bold;
+    border:none;
+    border-radius:15px;
+    padding:5px 15px;
+    color:white;
+    margin-top: 5px;
+    margin-left: 5px;
+    cursor:pointer;
+}

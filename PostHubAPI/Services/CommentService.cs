@@ -17,6 +17,11 @@ namespace PostHubAPI.Services
 
         }
 
+        public async Task<List<Comment>> GetReportedComment() 
+        {
+            return await _context.Comments.Where(x => x.isReported == true).ToListAsync(); 
+        }
+ 
         public async Task<bool> reportComment(int id) 
         {
             Comment? comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
