@@ -125,7 +125,7 @@ export class FullPostComponent implements OnInit {
     console.log(this.pictureInput?.nativeElement.filesUploadByUser)
     let file = this.pictureInput?.nativeElement.files[0];
     while(file != null && file != undefined){
-      formdata.append("image" + i, file, file.name);
+      formdata.append(i.toString(), file, file.name);
       i++;
       file = this.pictureInput?.nativeElement.files[i];
       
@@ -178,7 +178,7 @@ export class FullPostComponent implements OnInit {
     if(file == null)
     {
       console.log("aille");
-      return;
+      //return;
     }
     else{
       while(file != null && file != undefined){

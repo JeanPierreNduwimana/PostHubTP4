@@ -61,7 +61,6 @@
       <button *ngIf="comment.username != null" (click)="replyToggle = !replyToggle">Répondre</button>
     </div>
     <div>
-      <!-- Il faudra modifier cet input -->
       <input *ngIf="editToggle" multiple type="file" accept="images/*" name="editedCommentPictures" #filesUploadByUser>
     </div>
     <div>

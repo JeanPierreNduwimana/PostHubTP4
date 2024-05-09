@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Post } from '../models/post';
@@ -48,9 +48,16 @@ export class PostService {
   // Créer un post
   async postPost(hubId : number, formData : any) : Promise<Post>{
    
-    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Comments/PostPost/" + hubId, formData));
-    console.log(x);
-    return x;
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Comments/PostPost/" + hubId, formData)).catch((error: HttpErrorResponse) => {
+    if(error.error.message != undefined)
+    {
+      alert(error.error.message);
+      return;
+    }
+  });
+
+  return x;
+    
   }
 
   // Obtenir un post précis et tous ses commentaires classés par nouveauté / popularité

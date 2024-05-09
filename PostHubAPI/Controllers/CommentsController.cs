@@ -140,32 +140,22 @@ namespace PostHubAPI.Controllers
                 }
                 int index = 0;
 
-                while (formcollection.Files.GetFile(index.ToString()) != null)
+                pictures = await Recuperaptiondesphotos();
+
+                if(formcollection.Files.Count < pictures.Count)
                 {
-                    Picture picture = new Picture();
-                    IFormFile? file = formcollection.Files.GetFile(index.ToString());
-                    if (file != null)
-                    {
-
-                        Image image = Image.Load(file.OpenReadStream());
-                        picture.FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        picture.MimeType = file.ContentType;
-
-                        await _pictureService.EditPicture(picture, file, image);
-                        await _pictureService.AjoutPhoto(picture);
-                        pictures.Add(picture);
-
-                        index++;
-                    }
-
+                    return BadRequest(new { Message = "Il y a un problème avec les images ajoutés" });
                 }
+                
+
+                
             }
             catch (Exception)
             {
                 throw;
             }
 
-                Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
+            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, pictures);
 
             
             if(mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
@@ -179,6 +169,46 @@ namespace PostHubAPI.Controllers
             return Ok(new PostDisplayDTO(post, true, user));
         }
 
+
+        //Méthodes qui chargent les images recues
+
+        private async Task<List<Picture>> Recuperaptiondesphotos()
+        {
+            List<Picture> pictures = new List<Picture>();
+
+            IFormCollection formCollection = await Request.ReadFormAsync();
+            int i = 0;
+
+            while (formCollection.Files.GetFile(i.ToString()) != null)
+            {
+
+                IFormFile? file = formCollection.Files.GetFile(i.ToString());
+
+                if (file != null)
+                {
+                    Image image = Image.Load(file.OpenReadStream());
+
+                    Picture picture = new Picture()
+                    {
+                        Id = 0,
+                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                        MimeType = file.ContentType
+                    };
+
+                    await _pictureService.EditPicture(picture, file, image);
+                    await _pictureService.AjoutPhoto(picture);
+
+                    pictures.Add(picture);
+                }
+
+
+                i++;
+            }
+
+            return pictures;
+
+        }
+
         [HttpPost("{parentCommentId}")]
         [Authorize]
         [DisableRequestSizeLimit]
@@ -186,42 +216,17 @@ namespace PostHubAPI.Controllers
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (user == null) return Unauthorized();
-            List<Picture> pictures = new List<Picture>();
 
+            List<Picture> pictures = new List<Picture>();
             try
             {
-
-                IFormCollection formCollection = await Request.ReadFormAsync();
-                int i = 0;
-
-                while (formCollection.Files.GetFile("image" + i) != null)
-                {
-
-                    IFormFile? file = formCollection.Files.GetFile("image" + i);
-
-                    if (file != null)
-                    {
-                        Image image = Image.Load(file.OpenReadStream());
-
-                        Picture picture = new Picture()
-                        {
-                            Id = 0,
-                            FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
-                            MimeType = file.ContentType
-                        };
-
-                        await _pictureService.EditPicture(picture, file, image);
-                        await _pictureService.AjoutPhoto(picture);
-
-                        pictures.Add(picture);
-                    }
-
-
-                    i++;
-                }
-
+                pictures = await Recuperaptiondesphotos();
             }
-            catch (Exception) { throw; }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Il y a un problème avec les images ajoutés" });
+            }
+            
 
 
 
@@ -331,16 +336,28 @@ namespace PostHubAPI.Controllers
 
         [HttpPut("{commentId}")]
         [Authorize]
-        public async Task<ActionResult<CommentDisplayDTO>> PutComment(int commentId, CommentDTO commentDTO)
+        public async Task<ActionResult<CommentDisplayDTO>> PutComment(int commentId)
         {
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            List<Picture> pictures = new List<Picture>();
+            try
+            {
+                pictures = await Recuperaptiondesphotos();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Il y a un problème avec les images ajoutés" });
+            }
 
             Comment? comment = await _commentService.GetComment(commentId);
             if (comment == null) return NotFound();
 
             if (user == null || comment.User != user) return Unauthorized();
 
-            Comment? editedComment = await _commentService.EditComment(comment, commentDTO.Text, commentDTO.pictures);
+            string texteCommentaire = Request.Form["text"];
+
+            Comment? editedComment = await _commentService.EditComment(comment, texteCommentaire, pictures);
             if(editedComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             return Ok(new CommentDisplayDTO(editedComment, true, user));
