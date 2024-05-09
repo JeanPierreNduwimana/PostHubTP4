@@ -6,10 +6,19 @@
               <button (click)="removepicture(picture.id)" *ngIf="toggleEdit" type="submit" style="right:0px; position: absolute;">
                  <span>&times;</span>
               </button>
+            <div *ngIf="isAuteur">
               <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
-                  <img alt="{{picture.fileName}}" style="object-fit:cover; width:100%; height: 100%;"
-                    [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+                <img alt="{{picture.fileName}}" style="object-fit:cover; width:100%; height: 100%;"
+                  [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+            </a>
+            <button (click)="DeletePicutre(picture.id)" class="buttonSuppresionImage" style="right:0px; position: absolute;">x</button>
+            </div>
+            <div *ngIf="!isAuteur">
+              <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
+                <img alt="{{picture.fileName}}" style="object-fit:cover; width:100%; height: 100%;"
+                  [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
               </a>
+            </div>  
           </div>
         </li>
       </ul>

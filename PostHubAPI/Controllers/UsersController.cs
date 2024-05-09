@@ -151,8 +151,8 @@ namespace PostHubAPI.Controllers
 
             if (user == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   new { Message = "L'utilisateur n'a pas pu être trouvé !" });
+                byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/avatar/default.png");
+                return File(bytes, "image/png");
             }
 
             if (user.FileName != null && user.MimeType != null)

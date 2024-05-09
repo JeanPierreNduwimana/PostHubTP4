@@ -408,7 +408,31 @@ namespace PostHubAPI.Controllers
                     return Ok(new { Message = "Suppresion de la photo réussi" });
                 }
             }
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { Message = "Suppresion de la photo n'a pas réussi" });
+        }
+
+        [HttpDelete("{CommentId}/{PictureId}")]
+        [Authorize]
+        public async Task<ActionResult> RemovePicturePost(int CommentId, int PictureId)
+        {
+            Post? post = await _postService.GetPost(CommentId);
+            if (post == null) return NotFound();
+
+            Picture? picture = await _pictureService.FindPicture(PictureId);
+            if (picture == null) return NotFound();
+
+            foreach (var p in post.MainComment.Pictures)
+            {
+                if (p.Id == picture.Id)
+                {
+                    post.MainComment.Pictures.Remove(p);
+                    await _pictureService.DeleteOnePicture(picture);
+                    return Ok(new { Message = "Suppresion de la photo réussi" });
+                }
+            }
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { Message = "Suppresion de la photo n'a pas réussi" });
         }
 
         [HttpDelete("{commentId}")]
@@ -456,6 +480,13 @@ namespace PostHubAPI.Controllers
             } while (comment != null && comment.User == null && comment.GetSubCommentTotal() == 0);
 
             return Ok(new { Message = "Commentaire supprimé." });
+        }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Signalement(int id) 
+        {
+            await _commentService.reportComment(id);
+            return Ok(new { Message = "Commentaire signalé."});
         }
 
         private static IEnumerable<Post> GetPopularPosts(Hub hub, int qty)

@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -12,8 +14,18 @@ namespace PostHubAPI.Services
         public CommentService(PostHubAPIContext context)
         {
             _context = context;
+
         }
 
+        public async Task<bool> reportComment(int id) 
+        {
+            Comment? comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
+            if (comment == null) return false;
+
+            comment.isReported = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<Comment?> GetComment(int id)
         {
             if (IsContextNull()) return null;

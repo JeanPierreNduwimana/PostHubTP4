@@ -30,7 +30,7 @@
               <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank" class="enrouleImage">
                 <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
             </a>
-          </div>
+            </div>
         </li>
       </ul>
     </div>
@@ -54,7 +54,7 @@
       <div *ngIf="editMenu">
         <div *ngIf="isAuthor" (click)="this.editToggle = !this.editToggle">Modifier</div>
         <div *ngIf="isAuthor" (click)="deleteComment()">Supprimer</div>
-        <div *ngIf="!isAuthor">Signaler</div>
+        <div *ngIf="!isAuthor" (click)="SignalementPost(comment.id)">Signaler</div>
       </div>
     </div>
     <div>

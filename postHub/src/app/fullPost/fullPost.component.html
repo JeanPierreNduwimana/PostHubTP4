@@ -15,7 +15,7 @@
       <div *ngIf="editMenu">
         <div *ngIf="isAuthor" (click)="toggleMainCommentEdit = true">Modifier</div>
         <div *ngIf="isAuthor" (click)="deleteComment()">Supprimer</div>
-        <div *ngIf="!isAuthor">Signaler</div>
+        <div *ngIf="!isAuthor" (click)="SignalementPost(post.mainComment!.id)">Signaler</div>
       </div>
     </div>
   </div>
@@ -33,10 +33,10 @@
 
       <div class="commentPictures" *ngIf="listImages.length > 4">
         <!-- Des images pourraient être affichées ici... -->
-        <app-carrousel-full-post [listimages]="listImages" [toggleEdit]="toggleMainCommentEdit"> </app-carrousel-full-post>
+        <app-carrousel-full-post [isAuteur]="isAuthor" [comment]="post.mainComment"  [listimages]="listImages" [toggleEdit]="toggleMainCommentEdit"> </app-carrousel-full-post>
       </div>
-
-      <div class="commentPictures" *ngIf="listImages.length <= 4">
+      
+      <div class="commentPictures" *ngIf="listImages.length <= 4 && isAuthor">
         <!-- Des images pourraient être affichées ici... -->
         <ul style="display: flex; gap: 20px;">
           <li style="list-style: none;" *ngFor="let picture of listImages">
@@ -44,10 +44,32 @@
               <button (click)="removepicture(picture.id)" *ngIf="toggleMainCommentEdit" type="submit" style="right:0px; position: absolute;">
                  <span>&times;</span>
               </button>
-              <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
-                <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
-                [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
-              </a>
+              <div>
+                <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
+                  <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
+                    [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+                </a>
+                <button (click)="DeletePicutre(picture.id)" class="buttonSuppresionImage" style="right:0px; position: absolute;">x</button>
+              </div>    
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="commentPictures" *ngIf="listImages.length <= 4 && isAuthor != true">
+        <!-- Des images pourraient être affichées ici... -->
+        <ul style="display: flex; gap: 20px;">
+          <li style="list-style: none;" *ngFor="let picture of listImages">
+            <div style="position:relative;">
+              <button (click)="removepicture(picture.id)" *ngIf="toggleMainCommentEdit" type="submit" style="right:0px; position: absolute;">
+                 <span>&times;</span>
+              </button>
+              <div>
+                <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank">
+                  <img alt="{{picture.fileName}}" style="object-fit:cover; width:100px; height: 100px;"
+                    [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+                </a>
+              </div>    
             </div>
           </li>
         </ul>

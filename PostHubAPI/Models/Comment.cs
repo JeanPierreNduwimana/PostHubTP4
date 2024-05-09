@@ -7,6 +7,7 @@ namespace PostHubAPI.Models
         public int Id { get; set; }
         public string Text { get; set; } = null!;
         public DateTime? Date { get; set; }
+        public bool isReported { get; set; }
 
         [InverseProperty("ParentComment")]
         public virtual List<Comment>? SubComments { get; set; }
