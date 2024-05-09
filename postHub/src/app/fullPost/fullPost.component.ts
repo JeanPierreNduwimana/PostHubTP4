@@ -175,34 +175,40 @@ export class FullPostComponent implements OnInit {
     let i : number = 0; 
     let file = this.pictureInput?.nativeElement.files[0];
     let listpictures : Picture[] = [];
-    if(file == null)
+     if(file == null)
     {
       console.log("aille");
       //return;
     }
     else{
-      while(file != null && file != undefined){
-        formdata.append(i.toString(), file, file.name);
-        i++;
-        file = this.pictureInput?.nativeElement.files[i];
-      }
-      listpictures = await this.postService.AddPictures(formdata);
-      console.log(listpictures);
+      
+       while(file != null && file != undefined){
+      formdata.append(i.toString(), file, file.name);
+      i++;
+      file = this.pictureInput?.nativeElement.files[i];
     }
+      //listpictures = await this.postService.AddPictures(formdata);
+     // console.log(listpictures);
+    }
+ 
+
+    formdata.append("text",this.newMainCommentText);
 
     if(this.post == null || this.post.mainComment == null) return;
 
-    let commentDTO = {
+   /*  let commentDTO = {
       text : this.newMainCommentText,
       pictures : listpictures
-    }
+    } */
+
+    
 
     if(this.listBinImages.length > 0)
     {
       await this.postService.deletePictures(this.listBinImages);
     }
     
-    let newMainComment = await this.postService.editComment(commentDTO, this.post?.mainComment.id);
+    let newMainComment = await this.postService.editComment(formdata, this.post?.mainComment.id);
     this.post.mainComment = newMainComment;
     this.toggleMainCommentEdit = false;
 
