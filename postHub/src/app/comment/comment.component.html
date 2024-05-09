@@ -1,4 +1,3 @@
-
 <!-- Affichage du commentaire (oui c'est gros et laid) -->
 <div class="post" *ngIf="comment != null">
 
@@ -12,13 +11,28 @@
   <!-- Texte du commentaire et éventuellement images -->
   <div class="postContent">
     <div style="flex:1; display:flex; align-items:center;">
-      <img class="avatar" src="/assets/images/default.png" alt="Avatar">
+      <img class="avatar" [src]="'http://localhost:7007/api/Users/GetAvatar/' + comment.username" alt="Avatar">
       <div *ngIf="!editToggle">{{comment.text}}</div>
       <textarea *ngIf="editToggle" id="commentTextEdit" name="commentTextEdit" rows="3"
         [(ngModel)]="editedText">{{comment.text}}</textarea>
     </div>
-    <div class="commentPictures">
+    <div class="commentPictures" *ngIf="comment.pictures.length > 0">
       <!-- Des images pourraient être affichées ici... -->
+      <ul style="display: flex; gap: 20px;">
+        <li style="list-style: none; height: 100px; position:relative;" *ngFor="let picture of comment.pictures">
+            <div *ngIf="isAuthor == true">
+              <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank" class="enrouleImage">
+                <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+              </a>
+              <button (click)="DeletePicutre(picture.id)" class="buttonSuppresionImage" style="right:0px; position: absolute;">x</button>
+            </div>
+            <div *ngIf="isAuthor != true">
+              <a [href]="'http://localhost:7007/api/Comments/GetPictureBig/' + picture.id" target="_blank" class="enrouleImage">
+                <img style="object-fit:cover; width:100px; height: 100px;" alt="{{picture.fileName}}" [src]="'http://localhost:7007/api/Comments/GetPicture/' + picture.id">
+            </a>
+            </div>
+        </li>
+      </ul>
     </div>
   </div>
 
@@ -40,15 +54,14 @@
       <div *ngIf="editMenu">
         <div *ngIf="isAuthor" (click)="this.editToggle = !this.editToggle">Modifier</div>
         <div *ngIf="isAuthor" (click)="deleteComment()">Supprimer</div>
-        <div *ngIf="!isAuthor">Signaler</div>
+        <div *ngIf="!isAuthor" (click)="SignalementPost(comment.id)">Signaler</div>
       </div>
     </div>
     <div>
       <button *ngIf="comment.username != null" (click)="replyToggle = !replyToggle">Répondre</button>
     </div>
     <div>
-      <!-- Il faudra modifier cet input -->
-      <input *ngIf="editToggle" type="file" accept="images/*" name="editedCommentPictures">
+      <input *ngIf="editToggle" multiple type="file" accept="images/*" name="editedCommentPictures" #filesUploadByUser>
     </div>
     <div>
       <button *ngIf="editToggle" (click)="editToggle = false">Annuler</button>
@@ -65,7 +78,7 @@
   <input type="text" name="newComment" id="newComment" placeholder="Ajouter un commentaire" [(ngModel)]="newComment">
   <div *ngIf="displayInputFile" class="commentPictureAdd">
     <!-- Il faudra modifier cet input -->
-    <input type="file" accept="images/*" name="commentPictures">
+    <input #filesUploadByUser multiple type="file" accept="images/*" name="commentPictures">
   </div>
   <button (click)="displayInputFile = !displayInputFile"><fa-icon [icon]="faImage"></fa-icon></button>
   <button (click)="createComment()">Ajouter</button>

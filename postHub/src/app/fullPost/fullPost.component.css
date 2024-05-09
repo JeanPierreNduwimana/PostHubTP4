@@ -62,7 +62,7 @@
 }
 
 .upvoted, .score button:hover:first-child{
-    color:#45ff73 !important;
+    color:#ffa600 !important;
 }
 
 .downvoted, .score button:hover:last-child{
@@ -179,7 +179,7 @@
 }
 
 .postFooter>div:last-child>button{
-    background-color:#25dc53;
+    background-color:#ffa600;
     font-weight:bold;
     border:none;
     border-radius:15px;
@@ -209,6 +209,16 @@
     z-index:2;
     color:white;
     border-radius:3px;
+    text-align: center;
+    width:20px;
+    cursor:pointer;
+}
+.buttonSuppresionImage{
+    background:#353546;
+    border:solid 2px #5e5e75;
+    margin-bottom: 150;
+    color:white;
+    border-radius:15px;
     text-align: center;
     width:20px;
     cursor:pointer;

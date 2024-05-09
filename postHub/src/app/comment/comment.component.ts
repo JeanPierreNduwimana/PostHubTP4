@@ -1,8 +1,9 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { faDownLong, faEllipsis, faImage, faL, faMessage, faUpLong, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../models/comment';
 import { PostService } from '../services/post.service';
-import { CommonModule } from '@angular/common';
+import Glide from '@glidejs/glide';
+import { Picture } from '../models/picture';
 
 @Component({
   selector: 'app-comment',
@@ -32,6 +33,7 @@ export class CommentComponent implements OnInit {
   // Variables associées à des inputs
   newComment : string = "";
   editedText ?: string;
+  listImages : Picture[] = [];
 
   constructor(public postService : PostService) { }
 
@@ -39,6 +41,29 @@ export class CommentComponent implements OnInit {
     this.isAuthor = localStorage.getItem("username") == this.comment?.username;
     this.editedText = this.comment?.text;
   }
+
+  @ViewChild("filesUploadByUser", {static:false}) pictureInput?: ElementRef;
+  @ViewChildren('glideitems') glideitems : QueryList<any> = new QueryList();
+
+  ngAfterViewInit() {
+    this.glideitems.changes.subscribe(e => {
+      this.initGlide();
+    });
+    if (this.glideitems.length > 0) {
+      this.initGlide();
+    }
+  }
+    
+
+  initGlide() {
+    var glide = new Glide('.glide', {
+      type: 'carousel',
+      focusAt: 'center',
+      perView: Math.ceil(window.innerWidth / 400)
+    });
+    glide.mount();
+  }
+ 
 
   // Créer un nouveau sous-commentaire au commentaire affiché dans ce composant
   // (Pouvoir les commentaires du post, donc ceux qui sont enfant du commentaire principal du post,
@@ -48,16 +73,24 @@ export class CommentComponent implements OnInit {
       alert("Écris un commentaire niochon !");
       return;
     }
-
     if(this.comment == null) return;
     if(this.comment.subComments == null) this.comment.subComments = [];
 
-    let commentDTO = {
-      text : this.newComment
-    }
+    //Pour envoyer les photos au serveurs.   
+    let formdata = new FormData;
+    let i : number = 0; 
+    formdata.append("textComment", this.newComment)
 
-    this.comment.subComments.push(await this.postService.postComment(commentDTO, this.comment.id));
+    let file = this.pictureInput?.nativeElement.files[0];
+
+    while(file != null && file != undefined){
+      formdata.append(i.toString(), file, file.name);
+      i++;
+      file = this.pictureInput?.nativeElement.files[i];
+    }
     
+    this.comment.subComments.push(await this.postService.postComment(formdata, this.comment.id));
+
     this.replyToggle = false;
     this.repliesToggle = true;
     this.newComment = "";
@@ -68,11 +101,18 @@ export class CommentComponent implements OnInit {
 
     if(this.comment == null || this.editedText == undefined) return;
 
-    let commentDTO = {
-      text : this.editedText
+    let formdata = new FormData;
+    let i : number = 0;
+    formdata.append("text", this.editedText);
+    let file = this.pictureInput?.nativeElement.files[0];
+    while(file != null && file != undefined){
+      formdata.append(i.toString(), file, file.name);
+      i++;
+      file = this.pictureInput?.nativeElement.files[i];
     }
 
-    let newMainComment = await this.postService.editComment(commentDTO, this.comment.id);
+
+    let newMainComment = await this.postService.editComment(formdata, this.comment.id);
     this.comment = newMainComment;
     this.editedText = this.comment.text;
     this.editMenu = false;
@@ -138,4 +178,31 @@ export class CommentComponent implements OnInit {
     }
   }
 
+  //Delete a picture
+  async DeletePicutre(id : number){
+    if(this.isAuthor != false){
+      console.log("Est auteur")
+      if(this.comment != undefined){
+        if(id != undefined){
+          this.listImages = this.comment.pictures;
+          for(let i = 0; i <= this.listImages.length; i++){
+            let image : Picture = this.listImages[i]
+            if(image.id == id){
+              this.listImages.splice(i, 1);
+              break;
+            }
+          }
+          this.postService.supprimerPhoto(this.comment?.id, id);
+          console.log("Réussie")
+        }
+      }
+    }
+  }
+
+  async SignalementPost(id : number){
+    if(id != undefined){
+      this.comment?.isReported == true;
+      this.postService.report(id);
+    }
+  }
 }

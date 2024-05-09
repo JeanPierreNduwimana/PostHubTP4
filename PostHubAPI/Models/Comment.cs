@@ -7,6 +7,7 @@ namespace PostHubAPI.Models
         public int Id { get; set; }
         public string Text { get; set; } = null!;
         public DateTime? Date { get; set; }
+        public bool isReported { get; set; }
 
         [InverseProperty("ParentComment")]
         public virtual List<Comment>? SubComments { get; set; }
@@ -25,6 +26,8 @@ namespace PostHubAPI.Models
 
         [InverseProperty("Downvotes")]
         public virtual List<User>? Downvoters { get; set; } = new List<User>();
+
+        public virtual List<Picture> Pictures { get; set; } = new List<Picture>();
 
         public int GetSubCommentTotal()
         {

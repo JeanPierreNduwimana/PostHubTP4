@@ -15,6 +15,7 @@ export class CommentListComponent implements OnInit {
 
   async ngOnInit() {
     // On doit remplir la liste commentList ici avec tous les commentaires signalés !
+    this.commentList = await this.postService.getReported();
   }
 
   async deleteComment(comment : Comment){

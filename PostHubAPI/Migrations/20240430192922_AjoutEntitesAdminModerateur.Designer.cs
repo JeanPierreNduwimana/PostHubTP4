@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PostHubAPI.Data;
 
@@ -11,9 +12,10 @@ using PostHubAPI.Data;
 namespace PostHubAPI.Migrations
 {
     [DbContext(typeof(PostHubAPIContext))]
-    partial class PostHubAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20240430192922_AjoutEntitesAdminModerateur")]
+    partial class AjoutEntitesAdminModerateur
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,14 +99,14 @@ namespace PostHubAPI.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "047beea6-38f3-43bf-b780-11b03701dd96",
+                            ConcurrencyStamp = "283b3de9-d657-4217-8774-552338907dcd",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "ef29bfb2-2812-40bc-8123-0bdf5ced33bc",
+                            ConcurrencyStamp = "01a02140-1433-471d-915e-0df35d2f7bff",
                             Name = "moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -201,11 +203,6 @@ namespace PostHubAPI.Migrations
                         {
                             UserId = "11111111-1111-1111-1111-111111111111",
                             RoleId = "1"
-                        },
-                        new
-                        {
-                            UserId = "22222222-2222-2222-2222-222222222222",
-                            RoleId = "2"
                         });
                 });
 
@@ -248,9 +245,6 @@ namespace PostHubAPI.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("isReported")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -407,33 +401,17 @@ namespace PostHubAPI.Migrations
                         {
                             Id = "11111111-1111-1111-1111-111111111111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "870c074c-c504-4e61-9ab3-397580aa0239",
+                            ConcurrencyStamp = "cc060cd5-938b-4a10-83de-0227434b46e7",
                             Email = "a@a.a",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "A@A.A",
                             NormalizedUserName = "USERADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBBN0wwfFmG9ZfKVa8x+vs3FNCVnQv/ZQshdPJ+Lgp3YM2iC9mJ/tRum6jRmloWVtA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPE4WOg769MTfVuHG0B1QVAd7kqYQQ5t1TwJcTrCUZGiDcwd1BNpb4YAH+5IgaZwKg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1273a8f5-0dbb-4891-82cb-a0759446689a",
+                            SecurityStamp = "49090cbe-5e13-41eb-b90c-ced018c6bb0c",
                             TwoFactorEnabled = false,
                             UserName = "UserAdmin"
-                        },
-                        new
-                        {
-                            Id = "22222222-2222-2222-2222-222222222222",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "3b4ab345-80fb-4fe0-8b41-18b4ae1397b6",
-                            Email = "m@m.m",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "M@M.M",
-                            NormalizedUserName = "USERMODO",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB2qyOTEyy/jDFB50IUO5S48y+gKymQoL5IpHH+1etmEUJ7e+Aho3/vu38XTaC2GoA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "93f10b96-3172-4010-a304-7714f79cae17",
-                            TwoFactorEnabled = false,
-                            UserName = "UserModo"
                         });
                 });
 

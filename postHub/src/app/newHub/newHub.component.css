@@ -37,7 +37,7 @@
 .inputData button{
     margin-top:5px;
     margin-left:5px;
-    background-color:#25dc53;
+    background-color:#ffa600;
     font-weight:bold;
     border:none;
     border-radius:15px;
@@ -47,6 +47,6 @@
 }
 
 .inputData button:hover{
-    background-color:#45ff73;
+    background-color:#ffa600;
     color:black;
 }

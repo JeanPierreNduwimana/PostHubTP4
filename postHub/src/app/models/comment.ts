@@ -1,3 +1,5 @@
+import { Picture } from "./picture";
+import { publishFacade } from "@angular/compiler";
 export class Comment{
     constructor(
         public id : number,
@@ -9,6 +11,8 @@ export class Comment{
         public upvoted : boolean,
         public downvoted : boolean,
         public subCommentTotal : number,
-        public subComments : Comment[] | null
+        public subComments : Comment[] | null,
+        public pictures : Picture[],
+        public isReported : boolean
     ){}
 }

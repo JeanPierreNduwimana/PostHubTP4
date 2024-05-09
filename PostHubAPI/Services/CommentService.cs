@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using PostHubAPI.Data;
 using PostHubAPI.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -12,8 +14,23 @@ namespace PostHubAPI.Services
         public CommentService(PostHubAPIContext context)
         {
             _context = context;
+
         }
 
+        public async Task<List<Comment>> GetReportedComment() 
+        {
+            return await _context.Comments.Where(x => x.isReported == true).ToListAsync(); 
+        }
+ 
+        public async Task<bool> reportComment(int id) 
+        {
+            Comment? comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
+            if (comment == null) return false;
+
+            comment.isReported = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<Comment?> GetComment(int id)
         {
             if (IsContextNull()) return null;
@@ -21,7 +38,7 @@ namespace PostHubAPI.Services
             return await _context.Comments.FindAsync(id);
         }
 
-        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment)
+        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment, List<Picture>? pictures)
         {
             if (IsContextNull()) return null;
 
@@ -32,6 +49,7 @@ namespace PostHubAPI.Services
                 Date = DateTime.UtcNow,
                 User = user, // Auteur
                 ParentComment = parentComment, // null si commentaire principal du post
+                Pictures = pictures
             };
 
             _context.Comments.Add(newComment);
@@ -40,9 +58,10 @@ namespace PostHubAPI.Services
             return newComment;
         }
 
-        public async Task<Comment?> EditComment(Comment comment, string text)
+        public async Task<Comment?> EditComment(Comment comment, string text, List<Picture> pictures)
         {
             comment.Text = text;
+            comment.Pictures = pictures;
             await _context.SaveChangesAsync();
 
             return comment;

@@ -19,7 +19,7 @@ export class UserService {
       passwordConfirm : passwordConfirm
     };
 
-    let x = await lastValueFrom(this.http.post<any>("https://localhost:7007/api/Users/Register", registerDTO));
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/Register", registerDTO));
     console.log(x);
   }
 
@@ -31,7 +31,7 @@ export class UserService {
       password : password
     };
 
-    let x = await lastValueFrom(this.http.post<any>("https://localhost:7007/api/Users/Login", loginDTO));
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/Login", loginDTO));
     console.log(x);
 
     // N'hésitez pas à ajouter d'autres infos dans le stockage local... pourrait vous aider pour la partie admin / modérateur
@@ -39,4 +39,46 @@ export class UserService {
     localStorage.setItem("username", x.username);
   }
 
+  //Changer son avatar
+  async changeAvatar(username : string, formdata : any){
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangeAvatar/" + username, formdata))
+    console.log(x);
+  }
+
+
+  //Changer son mot de passe
+  async ChangerMotDePasse(formData : FormData)
+  {
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/ChangerMotDePasse", formData));
+    console.log(x);
+
+    if(x.message != null)
+    {
+      alert(x.message);
+    }
+    
+  }
+
+  async IsUserAdmin(username : string) : Promise<boolean>
+  {
+      let x = await lastValueFrom(this.http.get<boolean>("http://localhost:7007/api/Users/IsUserAdmin/" + username));
+
+      return x;
+  }
+
+  async IsUserModerator(username : string) : Promise<boolean>
+  {
+    let x = await lastValueFrom(this.http.get<boolean>("http://localhost:7007/api/Users/IsUserModerator/" + username));
+
+      return x;
+  }
+
+  async MakeModerator(username : string)
+  {
+    let x = await lastValueFrom(this.http.post<any>("http://localhost:7007/api/Users/MakeModerator/" + username, null));
+    if(x.message != null)
+    {
+      alert(x.message);
+    }
+  }
 }
